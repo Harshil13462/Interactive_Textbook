@@ -28,6 +28,7 @@ const Sidebar = ({ setCurrentTopic, setCurrentPage, currentTopic, currentPage })
     };
 
     fetchContents(); // Trigger the fetch when the component mounts
+    console.log(contents)
   }, []); // Empty dependency array means this runs once on component mount
 
   // Handle chapter click to expand/collapse subsections

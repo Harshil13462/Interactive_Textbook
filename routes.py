@@ -135,7 +135,6 @@ JSON_FILE_PATH = 'hierarchy_structure.json'
 @main.route('/api/get_json', methods=['GET'])
 def get_json():
     # Ensure the file exists
-    print("Hello")
     if not os.path.exists(JSON_FILE_PATH):
         return jsonify({'error': 'File not found'}), 404
 
@@ -143,6 +142,7 @@ def get_json():
     try:
         with open(JSON_FILE_PATH, 'r') as f:
             json_data = json.load(f)
+        print(dict(json_data))
         return jsonify(json_data), 200
     except Exception as e:
         return jsonify({'error': f'Error reading file: {str(e)}'}), 500
@@ -158,3 +158,35 @@ def process_pdf():
     tree_gen_final.main(filepath="uploads/textbook.pdf")
 
     return jsonify({"message": "Processing completed", "next_page": "/chapter/1/section/1"})
+
+@main.route('/api/summary', methods=['GET'])
+def get_summary():
+    chapter = request.args.get('chapter')
+    section = request.args.get('section')
+
+    if not chapter or not section:
+        return jsonify({"error": "Invalid chapter or section ID"}), 400
+
+    tree_data = json.load("tree_structure.json")
+
+    # Fetch the summary from the mock tree data
+    chapter_data = tree_data.get(f'Chapter {chapter}')
+    if not chapter_data:
+        return jsonify({"error": "Chapter not found"}), 404
+
+    section_summary = chapter_data.get(f'Section {section}')
+    if not section_summary:
+        return jsonify({"error": "Section not found"}), 404
+
+    return jsonify({"summary": section_summary})
+
+def get_indexes(chapter, section):
+    if not os.path.exists(JSON_FILE_PATH):
+        return jsonify({'error': 'File not found'}), 404
+
+    try:
+        with open(JSON_FILE_PATH, 'r') as f:
+            json_data = json.load(f)
+        return jsonify(json_data), 200
+    except Exception as e:
+        return jsonify({'error': f'Error reading file: {str(e)}'}), 500

@@ -4,8 +4,9 @@ from const import *
 import PyPDF2 as pdf
 from TBNode import TBNode
 import json
+import os
 
-openai.api_key = my_sk
+openai.api_key = os.getenv("OPENAI_API_KEY")
 
 def extract_text_from_pdf(pdf_path):
     with open(pdf_path, 'rb') as file:

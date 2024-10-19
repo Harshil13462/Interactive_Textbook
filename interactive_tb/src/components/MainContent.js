@@ -110,6 +110,18 @@ const MainContent = ({ onNext, onPrev, isFirstPage, isLastPage }) => {
   const prevPageName = !isFirstPageType ? capitalize(pageOrder[currentPageIndex - 1]) : '';
   const nextPageName = !isLastPageType ? capitalize(pageOrder[currentPageIndex + 1]) : '';
 
+  const handleNext = () => {
+    if (!isLastPageType) {
+      setPageType(pageOrder[currentPageIndex + 1]);
+    }
+  };
+
+  const handlePrev = () => {
+    if (!isFirstPageType) {
+      setPageType(pageOrder[currentPageIndex - 1]);
+    }
+  };
+
   return (
     <div className="main-content">
       <h2>
@@ -129,10 +141,10 @@ const MainContent = ({ onNext, onPrev, isFirstPage, isLastPage }) => {
       )}
 
       <Navigation
-        onNext={onNext}
-        onPrev={onPrev}
-        isFirstPage={isFirstPage}
-        isLastPage={isLastPage}
+        onNext={handleNext}
+        onPrev={handlePrev}
+        isFirstPage={isFirstPageType}
+        isLastPage={isLastPageType}
         prevPageName={prevPageName}
         nextPageName={nextPageName}
       />
