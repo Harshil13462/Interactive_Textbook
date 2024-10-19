@@ -1,0 +1,155 @@
+/* General layout for the app */
+.app {
+  display: flex;
+  height: 100vh; /* Full viewport height */
+}
+
+.sidebar {
+  width: 20%;
+  background-color: #f4f4f4;
+  padding: 10px;
+  box-shadow: 2px 0 5px rgba(0, 0, 0, 0.1);
+}
+
+.sidebar ul {
+  list-style-type: none;
+  padding: 0;
+}
+
+.sidebar ul li {
+  padding: 10px;
+  cursor: pointer;
+}
+
+.sidebar ul li.active {
+  font-weight: bold;
+}
+
+.page-links ul {
+  list-style-type: none;
+  padding: 0;
+  margin-top: 20px;
+}
+
+.page-links ul li {
+  padding: 10px;
+  cursor: pointer;
+}
+
+/* Main Content Area */
+.main-content {
+  width: 60%;
+  padding: 20px;
+  display: flex;
+  flex-direction: column;
+  justify-content: space-between; /* Ensures buttons are at the bottom */
+  background-color: #ffffff;
+  border: 1px solid #ddd;
+  height: 100vh; /* Full height for main content */
+  box-sizing: border-box;
+}
+
+/* Content body that holds the page content */
+.content-body {
+  flex-grow: 1; /* Allows the body content to grow and push buttons down */
+  margin-bottom: 20px;
+}
+
+/* Centered navigation within the Main Content */
+.navigation {
+  display: flex;
+  justify-content: space-between; /* Space between Previous and Next buttons */
+  align-items: center;
+  margin-top: auto; /* Pushes the buttons to the bottom */
+}
+
+/* Styling for navigation buttons */
+.nav-btn {
+  padding: 10px 20px;
+  background-color: #007bff;
+  color: white;
+  border: none;
+  border-radius: 5px;
+  cursor: pointer;
+  width: 60px;
+  height: 60px;
+  font-size: 24px;
+}
+
+.nav-btn:disabled {
+  background-color: #ccc;
+  cursor: not-allowed;
+}
+
+/* Right Panel - Chat Interface */
+.right-panel {
+  width: 20%;
+  background-color: #f4f4f4;
+  padding: 10px;
+  display: flex;
+  flex-direction: column;
+  justify-content: space-between;
+  border-left: 1px solid #ddd;
+  height: 100vh; /* Full height of the viewport */
+  box-sizing: border-box; /* Ensures padding doesn't affect total height */
+}
+
+.right-panel h3 {
+  margin-bottom: 10px;
+  text-align: center;
+}
+
+/* Chat history (scrollable) */
+.chat-history {
+  flex-grow: 1;
+  overflow-y: auto;
+  padding: 10px;
+  border: 1px solid #ddd;
+  background-color: #fff;
+  margin-bottom: 10px;
+}
+
+.chat-message {
+  margin: 5px 0;
+}
+
+.chat-message.user {
+  text-align: right;
+  color: #007bff;
+}
+
+.chat-message.bot {
+  text-align: left;
+  color: #000;
+}
+
+/* Chat input form at the bottom of the chat panel */
+.chat-input-form {
+  display: flex;
+}
+
+.chat-input-form input {
+  flex-grow: 1;
+  padding: 10px;
+  border: 1px solid #ddd;
+  border-radius: 5px 0 0 5px;
+}
+
+.chat-input-form button {
+  padding: 10px;
+  background-color: #007bff;
+  color: white;
+  border: none;
+  cursor: pointer;
+  border-radius: 0 5px 5px 0;
+}
+
+.chat-input-form button:hover {
+  background-color: #0056b3;
+}
+
+/* Disabled button styling */
+button:disabled {
+  background-color: #ccc;
+  cursor: not-allowed;
+}
