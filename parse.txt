@@ -1,0 +1,2191 @@
+Introduction to
+Applied Linear Algebra
+Vectors, Matrices, and Least Squares
+Stephen Boyd
+Department of Electrical Engineering
+Stanford University
+Lieven Vandenberghe
+Department of Electrical and Computer Engineering
+University of California, Los Angeles
+University Printing House, Cambridge CB2 8BS, United Kingdom
+One Liberty Plaza, 20th Floor, New York, NY 10006, USA
+477 Williamstown Road, Port Melbourne, VIC 3207, Australia
+314–321, 3rd Floor, Plot 3, Splendor Forum, Jasola District Centre,
+New Delhi – 110025, India
+79 Anson Road, #06–04/06, Singapore 079906
+Cambridge University Press is part of the University of Cambridge.
+It furthers the University’s mission by disseminating knowledge in the pursuit of
+education, learning, and research at the highest international levels of excellence.
+www.cambridge.org
+Information on this title: www.cambridge.org/9781316518960
+DOI: 10.1017/9781108583664
+©Cambridge University Press 2018
+This publication is in copyright. Subject to statutory exception
+and to the provisions of relevant collective licensing agreements,
+no reproduction of any part may take place without the written
+permission of Cambridge University Press.
+First published 2018
+Printed in the United Kingdom by Clays, St Ives plc, 2018
+A catalogue record for this publication is available from the British Library.
+ISBN 978-1-316-51896-0 Hardback
+Additional resources for this publication at www.cambridge.org/IntroAppLinAlg
+Cambridge University Press has no responsibility for the persistence or accuracy
+of URLs for external or third-party internet websites referred to in this publication
+and does not guarantee that any content on such websites is, or will remain,
+accurate or appropriate.For
+Anna, Nicholas, and Nora
+Dani el and MargrietContents
+Preface xi
+I Vectors 1
+1 Vectors 3
+1.1 Vectors . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . 3
+1.2 Vector addition . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . 11
+1.3 Scalar-vector multiplication . . . . . . . . . . . . . . . . . . . . . . . . 15
+1.4 Inner product . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . 19
+1.5 Complexity of vector computations . . . . . . . . . . . . . . . . . . . . 22
+Exercises . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . 25
+2 Linear functions 29
+2.1 Linear functions . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . 29
+2.2 Taylor approximation . . . . . . . . . . . . . . . . . . . . . . . . . . . 35
+2.3 Regression model . . . . . . . . . . . . . . . . . . . . . . . . . . . . . 38
+Exercises . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . 42
+3 Norm and distance 45
+3.1 Norm . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . 45
+3.2 Distance . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . 48
+3.3 Standard deviation . . . . . . . . . . . . . . . . . . . . . . . . . . . . . 52
+3.4 Angle . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . 56
+3.5 Complexity . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . 63
+Exercises . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . 64
+4 Clustering 69
+4.1 Clustering . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . 69
+4.2 A clustering objective . . . . . . . . . . . . . . . . . . . . . . . . . . . 72
+4.3 Thek-means algorithm . . . . . . . . . . . . . . . . . . . . . . . . . . 74
+4.4 Examples . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . 79
+4.5 Applications . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . 85
+Exercises . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . 87viii Contents
+5 Linear independence 89
+5.1 Linear dependence . . . . . . . . . . . . . . . . . . . . . . . . . . . . . 89
+5.2 Basis . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . 91
+5.3 Orthonormal vectors . . . . . . . . . . . . . . . . . . . . . . . . . . . . 95
+5.4 Gram{Schmidt algorithm . . . . . . . . . . . . . . . . . . . . . . . . . 97
+Exercises . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . 103
+II Matrices 105
+6 Matrices 107
+6.1 Matrices . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . 107
+6.2 Zero and identity matrices . . . . . . . . . . . . . . . . . . . . . . . . 113
+6.3 Transpose, addition, and norm . . . . . . . . . . . . . . . . . . . . . . 115
+6.4 Matrix-vector multiplication . . . . . . . . . . . . . . . . . . . . . . . . 118
+6.5 Complexity . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . 122
+Exercises . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . 124
+7 Matrix examples 129
+7.1 Geometric transformations . . . . . . . . . . . . . . . . . . . . . . . . 129
+7.2 Selectors . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . 131
+7.3 Incidence matrix . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . 132
+7.4 Convolution . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . 136
+Exercises . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . 144
+8 Linear equations 147
+8.1 Linear and ane functions . . . . . . . . . . . . . . . . . . . . . . . . 147
+8.2 Linear function models . . . . . . . . . . . . . . . . . . . . . . . . . . 150
+8.3 Systems of linear equations . . . . . . . . . . . . . . . . . . . . . . . . 152
+Exercises . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . 159
+9 Linear dynamical systems 163
+9.1 Linear dynamical systems . . . . . . . . . . . . . . . . . . . . . . . . . 163
+9.2 Population dynamics . . . . . . . . . . . . . . . . . . . . . . . . . . . 164
+9.3 Epidemic dynamics . . . . . . . . . . . . . . . . . . . . . . . . . . . . 168
+9.4 Motion of a mass . . . . . . . . . . . . . . . . . . . . . . . . . . . . . 169
+9.5 Supply chain dynamics . . . . . . . . . . . . . . . . . . . . . . . . . . 171
+Exercises . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . 174
+10 Matrix multiplication 177
+10.1 Matrix-matrix multiplication . . . . . . . . . . . . . . . . . . . . . . . 177
+10.2 Composition of linear functions . . . . . . . . . . . . . . . . . . . . . . 183
+10.3 Matrix power . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . 186
+10.4 QR factorization . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . 189
+Exercises . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . 191Contents ix
+11 Matrix inverses 199
+11.1 Left and right inverses . . . . . . . . . . . . . . . . . . . . . . . . . . . 199
+11.2 Inverse . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . 202
+11.3 Solving linear equations . . . . . . . . . . . . . . . . . . . . . . . . . . 207
+11.4 Examples . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . 210
+11.5 Pseudo-inverse . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . 214
+Exercises . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . 217
+III Least squares 223
+12 Least squares 225
+12.1 Least squares problem . . . . . . . . . . . . . . . . . . . . . . . . . . . 225
+12.2 Solution . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . 227
+12.3 Solving least squares problems . . . . . . . . . . . . . . . . . . . . . . 231
+12.4 Examples . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . 234
+Exercises . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . 239
+13 Least squares data tting 245
+13.1 Least squares data tting . . . . . . . . . . . . . . . . . . . . . . . . . 245
+13.2 Validation . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . 260
+13.3 Feature engineering . . . . . . . . . . . . . . . . . . . . . . . . . . . . 269
+Exercises . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . 279
+14 Least squares classication 285
+14.1 Classication . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . 285
+14.2 Least squares classier . . . . . . . . . . . . . . . . . . . . . . . . . . . 288
+14.3 Multi-class classiers . . . . . . . . . . . . . . . . . . . . . . . . . . . 297
+Exercises . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . 305
+15 Multi-objective least squares 309
+15.1 Multi-objective least squares . . . . . . . . . . . . . . . . . . . . . . . 309
+15.2 Control . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . 314
+15.3 Estimation and inversion . . . . . . . . . . . . . . . . . . . . . . . . . 316
+15.4 Regularized data tting . . . . . . . . . . . . . . . . . . . . . . . . . . 325
+15.5 Complexity . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . 330
+Exercises . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . 334
+16 Constrained least squares 339
+16.1 Constrained least squares problem . . . . . . . . . . . . . . . . . . . . 339
+16.2 Solution . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . 344
+16.3 Solving constrained least squares problems . . . . . . . . . . . . . . . . 347
+Exercises . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . 352x Contents
+17 Constrained least squares applications 357
+17.1 Portfolio optimization . . . . . . . . . . . . . . . . . . . . . . . . . . . 357
+17.2 Linear quadratic control . . . . . . . . . . . . . . . . . . . . . . . . . . 366
+17.3 Linear quadratic state estimation . . . . . . . . . . . . . . . . . . . . . 372
+Exercises . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . 378
+18 Nonlinear least squares 381
+18.1 Nonlinear equations and least squares . . . . . . . . . . . . . . . . . . 381
+18.2 Gauss{Newton algorithm . . . . . . . . . . . . . . . . . . . . . . . . . 386
+18.3 Levenberg{Marquardt algorithm . . . . . . . . . . . . . . . . . . . . . 391
+18.4 Nonlinear model tting . . . . . . . . . . . . . . . . . . . . . . . . . . 399
+18.5 Nonlinear least squares classication . . . . . . . . . . . . . . . . . . . 401
+Exercises . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . 412
+19 Constrained nonlinear least squares 419
+19.1 Constrained nonlinear least squares . . . . . . . . . . . . . . . . . . . . 419
+19.2 Penalty algorithm . . . . . . . . . . . . . . . . . . . . . . . . . . . . . 421
+19.3 Augmented Lagrangian algorithm . . . . . . . . . . . . . . . . . . . . . 422
+19.4 Nonlinear control . . . . . . . . . . . . . . . . . . . . . . . . . . . . . 425
+Exercises . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . 434
+Appendices 437
+A Notation 439
+B Complexity 441
+C Derivatives and optimization 443
+C.1 Derivatives . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . 443
+C.2 Optimization . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . 447
+C.3 Lagrange multipliers . . . . . . . . . . . . . . . . . . . . . . . . . . . . 448
+D Further study 451
+Index 455Preface
+This book is meant to provide an introduction to vectors, matrices, and least
+squares methods, basic topics in applied linear algebra. Our goal is to give the
+beginning student, with little or no prior exposure to linear algebra, a good ground-
+ing in the basic ideas, as well as an appreciation for how they are used in many
+applications, including data tting, machine learning and articial intelligence, to-
+mography, navigation, image processing, nance, and automatic control systems.
+The background required of the reader is familiarity with basic mathematical
+notation. We use calculus in just a few places, but it does not play a critical
+role and is not a strict prerequisite. Even though the book covers many topics
+that are traditionally taught as part of probability and statistics, such as tting
+mathematical models to data, no knowledge of or background in probability and
+statistics is needed.
+The book covers less mathematics than a typical text on applied linear algebra.
+We use only one theoretical concept from linear algebra, linear independence, and
+only one computational tool, the QR factorization; our approach to most applica-
+tions relies on only one method, least squares (or some extension). In this sense
+we aim for intellectual economy: With just a few basic mathematical ideas, con-
+cepts, and methods, we cover many applications. The mathematics we do present,
+however, is complete, in that we carefully justify every mathematical statement.
+In contrast to most introductory linear algebra texts, however, we describe many
+applications, including some that are typically considered advanced topics, like
+document classication, control, state estimation, and portfolio optimization.
+The book does not require any knowledge of computer programming, and can be
+used as a conventional textbook, by reading the chapters and working the exercises
+that do not involve numerical computation. This approach however misses out on
+one of the most compelling reasons to learn the material: You can use the ideas and
+methods described in this book to do practical things like build a prediction model
+from data, enhance images, or optimize an investment portfolio. The growing power
+of computers, together with the development of high level computer languages
+and packages that support vector and matrix computation, have made it easy to
+use the methods described in this book for real applications. For this reason we
+hope that every student of this book will complement their study with computer
+programming exercises and projects, including some that involve real data. This
+book includes some generic exercises that require computation; additional ones,
+and the associated data les and language-specic resources, are available online.xii Preface
+If you read the whole book, work some of the exercises, and carry out computer
+exercises to implement or use the ideas and methods, you will learn a lot. While
+there will still be much for you to learn, you will have seen many of the basic ideas
+behind modern data science and other application areas. We hope you will be
+empowered to use the methods for your own applications.
+The book is divided into three parts. Part I introduces the reader to vectors,
+and various vector operations and functions like addition, inner product, distance,
+and angle. We also describe how vectors are used in applications to represent word
+counts in a document, time series, attributes of a patient, sales of a product, an
+audio track, an image, or a portfolio of investments. Part II does the same for
+matrices, culminating with matrix inverses and methods for solving linear equa-
+tions. Part III, on least squares, is the payo, at least in terms of the applications.
+We show how the simple and natural idea of approximately solving a set of over-
+determined equations, and a few extensions of this basic idea, can be used to solve
+many practical problems.
+The whole book can be covered in a 15 week (semester) course; a 10 week
+(quarter) course can cover most of the material, by skipping a few applications and
+perhaps the last two chapters on nonlinear least squares. The book can also be used
+for self-study, complemented with material available online. By design, the pace of
+the book accelerates a bit, with many details and simple examples in parts I and II,
+and more advanced examples and applications in part III. A course for students
+with little or no background in linear algebra can focus on parts I and II, and cover
+just a few of the more advanced applications in part III. A more advanced course
+on applied linear algebra can quickly cover parts I and II as review, and then focus
+on the applications in part III, as well as additional topics.
+We are grateful to many of our colleagues, teaching assistants, and students
+for helpful suggestions and discussions during the development of this book and
+the associated courses. We especially thank our colleagues Trevor Hastie, Rob
+Tibshirani, and Sanjay Lall, as well as Nick Boyd, for discussions about data tting
+and classication, and Jenny Hong, Ahmed Bou-Rabee, Keegan Go, David Zeng,
+and Jaehyun Park, Stanford undergraduates who helped create and teach the course
+EE103. We thank David Tse, Alex Lemon, Neal Parikh, and Julie Lancashire for
+carefully reading drafts of this book and making many good suggestions.
+Stephen Boyd Stanford, California
+Lieven Vandenberghe Los Angeles, CaliforniaPart I
+VectorsChapter 1
+Vectors
+In this chapter we introduce vectors and some common operations on them. We
+describe some settings in which vectors are used.
+1.1 Vectors
+Avector is an ordered nite list of numbers. Vectors are usually written as vertical
+arrays, surrounded by square or curved brackets, as in
+2
+664 1:1
+0:0
+3:6
+ 7:23
+775or0
+BB@ 1:1
+0:0
+3:6
+ 7:21
+CCA:
+They can also be written as numbers separated by commas and surrounded by
+parentheses. In this notation style, the vector above is written as
+( 1:1;0:0;3:6; 7:2):
+The elements (orentries ,coecients ,components ) of a vector are the values in the
+array. The size(also called dimension orlength ) of the vector is the number of
+elements it contains. The vector above, for example, has size four; its third entry
+is 3:6. A vector of size nis called an n-vector . A 1-vector is considered to be the
+same as a number, i.e., we do not distinguish between the 1-vector [ 1 :3 ] and the
+number 1:3.
+We often use symbols to denote vectors. If we denote an n-vector using the
+symbola, theith element of the vector ais denotedai, where the subscript iis an
+integer index that runs from 1 to n, the size of the vector.
+Two vectors aandbareequal , which we denote a=b, if they have the same
+size, and each of the corresponding entries is the same. If aandbaren-vectors,
+thena=bmeansa1=b1, . . . ,an=bn.4 1 Vectors
+The numbers or values of the elements in a vector are called scalars . We will
+focus on the case that arises in most applications, where the scalars are real num-
+bers. In this case we refer to vectors as real vectors . (Occasionally other types of
+scalars arise, for example, complex numbers, in which case we refer to the vector
+as a complex vector .) The set of all real numbers is written as R, and the set of all
+realn-vectors is denoted Rn, soa2Rnis another way to say that ais ann-vector
+with real entries. Here we use set notation: a2Rnmeans that ais an element of
+the set Rn; see appendix A.
+Block or stacked vectors. It is sometimes useful to dene vectors by concatenat-
+ingorstacking two or more vectors, as in
+a=2
+4b
+c
+d3
+5;
+wherea,b,c, anddare vectors. If bis anm-vector,cis ann-vector, and dis a
+p-vector, this denes the ( m+n+p)-vector
+a= (b1;b2;:::;bm;c1;c2;:::;cn;d1;d2;:::;dp):
+The stacked vector ais also written as a= (b;c;d ).
+Stacked vectors can include scalars (numbers). For example if ais a 3-vector,
+(1;a) is the 4-vector (1 ;a1;a2;a3).
+Subvectors. In the equation above, we say that b,c, anddaresubvectors or
+slices ofa, with sizes m,n, andp, respectively. Colon notation is used to denote
+subvectors. If ais a vector, then ar:sis the vector of size s r+ 1, with entries
+ar;:::;as:
+ar:s= (ar;:::;as):
+The subscript r:sis called the index range . Thus, in our example above, we have
+b=a1:m; c =a(m+1):(m+n); d =a(m+n+1):(m+n+p):
+As a more concrete example, if zis the 4-vector (1 ; 1;2;0), the slice z2:3isz2:3=
+( 1;2). Colon notation is not completely standard, but it is growing in popularity.
+Notational conventions. Some authors try to use notation that helps the reader
+distinguish between vectors and scalars (numbers). For example, Greek letters
+(,, . . . ) might be used for numbers, and lower-case letters ( a,x,f, . . . ) for
+vectors. Other notational conventions include vectors given in bold font ( g), or
+vectors written with arrows above them ( ~ a). These notational conventions are not
+standardized, so you should be prepared to gure out what things are ( i.e., scalars
+or vectors) despite the author's notational scheme (if any exists).1.1 Vectors 5
+Indexing. We should give a couple of warnings concerning the subscripted index
+notationai. The rst warning concerns the range of the index. In many computer
+languages, arrays of length nare indexed from i= 0 toi=n 1. But in standard
+mathematical notation, n-vectors are indexed from i= 1 toi=n, so in this book,
+vectors will be indexed from i= 1 toi=n.
+The next warning concerns an ambiguity in the notation ai, used for the ith
+element of a vector a. The same notation will occasionally refer to the ith vector
+in a collection or list of kvectorsa1;:::;ak. Whethera3means the third element
+of a vector a(in which case a3is a number), or the third vector in some list of
+vectors (in which case a3is a vector) should be clear from the context. When we
+need to refer to an element of a vector that is in an indexed collection of vectors,
+we can write ( ai)jto refer to the jth entry of ai, theith vector in our list.
+Zero vectors. Azero vector is a vector with all elements equal to zero. Sometimes
+the zero vector of size nis written as 0 n, where the subscript denotes the size.
+But usually a zero vector is denoted just 0, the same symbol used to denote the
+number 0. In this case you have to gure out the size of the zero vector from the
+context. As a simple example, if ais a 9-vector, and we are told that a= 0, the 0
+vector on the right-hand side must be the one of size 9.
+Even though zero vectors of dierent sizes are dierent vectors, we use the same
+symbol 0 to denote them. In computer programming this is called overloading :
+The symbol 0 is overloaded because it can mean dierent things depending on the
+context ( e.g., the equation it appears in).
+Unit vectors. A (standard) unit vector is a vector with all elements equal to zero,
+except one element which is equal to one. The ith unit vector (of size n) is the
+unit vector with ith element one, and denoted ei. For example, the vectors
+e1=2
+41
+0
+03
+5; e 2=2
+40
+1
+03
+5; e 3=2
+40
+0
+13
+5
+are the three unit vectors of size 3. The notation for unit vectors is an example of
+the ambiguity in notation noted above. Here, eidenotes the ith unit vector, and
+not theith element of a vector e. Thus we can describe the ith unitn-vectoreias
+(ei)j=1j=i
+0j6=i;
+fori;j= 1;:::;n . On the left-hand side eiis ann-vector; (ei)jis a number, its jth
+entry. As with zero vectors, the size of eiis usually determined from the context.
+Ones vector. We use the notation 1nfor then-vector with all its elements equal
+to one. We also write 1if the size of the vector can be determined from the
+context. (Some authors use eto denote a vector of all ones, but we will not use
+this notation.) The vector 1is sometimes called the ones vector .6 1 Vectors
+x
+x1x2
+x1x2x
+Figure 1.1 Left. The 2-vector xspecies the position (shown as a dot)
+with coordinates x1andx2in a plane. Right. The 2-vector xrepresents a
+displacement in the plane (shown as an arrow) by x1in the rst axis and x2
+in the second.
+Sparsity. A vector is said to be sparse if many of its entries are zero; its sparsity
+pattern is the set of indices of nonzero entries. The number of the nonzero entries
+of ann-vectorxis denoted nnz(x). Unit vectors are sparse, since they have only
+one nonzero entry. The zero vector is the sparsest possible vector, since it has no
+nonzero entries. Sparse vectors arise in many applications.
+Examples
+Ann-vector can be used to represent nquantities or values in an application. In
+some cases the values are similar in nature (for example, they are given in the same
+physical units); in others, the quantities represented by the entries of the vector are
+quite dierent from each other. We briey describe below some typical examples,
+many of which we will see throughout the book.
+Location and displacement. A 2-vector can be used to represent a position or
+location in a 2-dimensional (2-D) space, i.e., a plane, as shown in gure 1.1. A
+3-vector is used to represent a location or position of some point in 3-dimensional
+(3-D) space. The entries of the vector give the coordinates of the position or
+location.
+A vector can also be used to represent a displacement in a plane or 3-D space,
+in which case it is typically drawn as an arrow, as shown in gure 1.1. A vector can
+also be used to represent the velocity or acceleration, at a given time, of a point
+that moves in a plane or 3-D space.
+Color. A 3-vector can represent a color, with its entries giving the Red, Green,
+and Blue (RGB) intensity values (often between 0 and 1). The vector (0 ;0;0)
+represents black, the vector (0 ;1;0) represents a bright pure green color, and the
+vector (1;0:5;0:5) represents a shade of pink. This is illustrated in gure 1.2.1.1 Vectors 7
+(1,0,0) (0,1,0) (0,0,1)
+(1,1,0) (1,0.5,0.5) (0.5,0.5,0.5)
+Figure 1.2 Six colors and their RGB vectors.
+Quantities. Ann-vectorqcan represent the amounts or quantities of ndierent
+resources or products held (or produced, or required) by an entity such as a com-
+pany. Negative entries mean an amount of the resource owed to another party (or
+consumed, or to be disposed of). For example, a bill of materials is a vector that
+gives the amounts of nresources required to create a product or carry out a task.
+Portfolio. Ann-vectorscan represent a stock portfolio or investment in ndif-
+ferent assets, with sigiving the number of shares of asset iheld. The vector
+(100;50;20) represents a portfolio consisting of 100 shares of asset 1, 50 shares of
+asset 2, and 20 shares of asset 3. Short positions ( i.e., shares that you owe another
+party) are represented by negative entries in a portfolio vector. The entries of the
+portfolio vector can also be given in dollar values, or fractions of the total dollar
+amount invested.
+Values across a population. Ann-vector can give the values of some quantity
+across a population of individuals or entities. For example, an n-vectorbcan
+give the blood pressure of a collection of npatients, with bithe blood pressure of
+patienti, fori= 1;:::;n .
+Proportions. A vectorwcan be used to give fractions or proportions out of n
+choices, outcomes, or options, with withe fraction with choice or outcome i. In
+this case the entries are nonnegative and add up to one. Such vectors can also be
+interpreted as the recipes for a mixture of nitems, an allocation across nentities,
+or as probability values in a probability space with noutcomes. For example, a
+uniform mixture of 4 outcomes is represented as the 4-vector (1 =4;1=4;1=4;1=4).
+Time series. Ann-vector can represent a time series orsignal , that is, the value
+of some quantity at dierent times. (The entries in a vector that represents a time
+series are sometimes called samples , especially when the quantity is something8 1 Vectors
+0 10 20 30 40 50657075808590
+ixi(◦F)
+Figure 1.3 Hourly temperature in downtown Los Angeles on August 5 and
+6, 2015 (starting at 12:47AM, ending at 11:47PM).
+measured.) An audio (sound) signal can be represented as a vector whose entries
+give the value of acoustic pressure at equally spaced times (typically 48000 or 44100
+per second). A vector might give the hourly rainfall (or temperature, or barometric
+pressure) at some location, over some time period. When a vector represents a time
+series, it is natural to plot xiversusiwith lines connecting consecutive time series
+values. (These lines carry no information; they are added only to make the plot
+easier to understand visually.) An example is shown in gure 1.3, where the 48-
+vectorxgives the hourly temperature in downtown Los Angeles over two days.
+Daily return. A vector can represent the daily return of a stock, i.e., its fractional
+increase (or decrease if negative) in value over the day. For example the return time
+series vector ( 0:022;+0:014;+0:004) means the stock price went down 2 :2% on
+the rst day, then up 1 :4% the next day, and up again 0 :4% on the third day. In
+this example, the samples are not uniformly spaced in time; the index refers to
+trading days, and does not include weekends or market holidays. A vector can
+represent the daily (or quarterly, hourly, or minute-by-minute) value of any other
+quantity of interest for an asset, such as price or volume.
+Cash ow. A cash ow into and out of an entity (say, a company) can be repre-
+sented by a vector, with positive entries representing payments to the entity, and
+negative entries representing payments by the entity. For example, with entries
+giving cash ow each quarter, the vector (1000 ; 10; 10; 10; 1010) represents
+a one year loan of $1000, with 1% interest only payments made each quarter, and
+the principal and last interest payment at the end.1.1 Vectors 9
+0.650.050.20
+0.280.000.90
+Figure 1.4 88 image and the grayscale levels at six pixels.
+Images. A monochrome (black and white) image is an array of MNpixels
+(square patches with uniform grayscale level) with Mrows andNcolumns. Each
+of theMN pixels has a grayscale or intensity value, with 0 corresponding to black
+and 1 corresponding to bright white. (Other ranges are also used.) An image can
+be represented by a vector of length MN, with the elements giving grayscale levels
+at the pixel locations, typically ordered column-wise or row-wise.
+Figure 1.4 shows a simple example, an 8 8 image. (This is a very low resolution;
+typical values of MandNare in the hundreds or thousands.) With the vector
+entries arranged row-wise, the associated 64-vector is
+x= (0:65;0:05;0:20;:::; 0:28;0:00;0:90):
+A colorMNpixel image is described by a vector of length 3 MN, with the
+entries giving the R, G, and B values for each pixel, in some agreed-upon order.
+Video. A monochrome video, i.e., a sequence of length Kof images with MN
+pixels, can be represented by a vector of length KMN (again, in some particular
+order).
+Word count and histogram. A vector of length ncan represent the number of
+times each word in a dictionary of nwords appears in a document. For example,
+(25;2;0) means that the rst dictionary word appears 25 times, the second one
+twice, and the third one not at all. (Typical dictionaries used for document word
+counts have many more than 3 elements.) A small example is shown in gure 1.5. A
+variation is to have the entries of the vector give the histogram of word frequencies
+in the document, so that, e.g.,x5= 0:003 means that 0 :3% of all the words in the
+document are the fth word in the dictionary.
+It is common practice to count variations of a word (say, the same word stem
+with dierent endings) as the same word; for example, `rain', `rains', `raining', and10 1 Vectors
+Word count vectors are used in computer based document analysis.
+Each entry of the word count vector is the number of times the as-
+sociated dictionary word appears in the document.
+word
+in
+number
+horse
+the
+document2
+66666643
+2
+1
+0
+4
+23
+7777775
+Figure 1.5 A snippet of text (top), the dictionary (bottom left), and word
+count vector (bottom right).
+`rained' might all be counted as `rain'. Reducing each word to its stem is called
+stemming . It is also common practice to exclude words that are too common (such
+as `a' or `the'), which are referred to as stop words , as well as words that are
+extremely rare.
+Customer purchases. Ann-vectorpcan be used to record a particular customer's
+purchases from some business over some period of time, with pithe quantity of
+itemithe customer has purchased, for i= 1;:::;n . (Unlessnis small, we would
+expect many of these entries to be zero, meaning the customer has not purchased
+those items.) In one variation, pirepresents the total dollar value of item ithe
+customer has purchased.
+Occurrence or subsets. Ann-vectorocan be used to record whether or not
+each ofndierent events has occurred, with oi= 0 meaning that event idid not
+occur, and oi= 1 meaning that it did occur. Such a vector encodes a subset of
+a collection of nobjects, with oi= 1 meaning that object iis contained in the
+subset, and oi= 0 meaning that object iis not in the subset. Each entry of the
+vectorais either 0 or 1; such vectors are called Boolean , after the mathematician
+George Boole, a pioneer in the study of logic.
+Features or attributes. In many applications a vector collects together ndierent
+quantities that pertain to a single thing or object. The quantities can be measure-
+ments, or quantities that can be measured or derived from the object. Such a
+vector is sometimes called a feature vector , and its entries are called the features
+orattributes . For example, a 6-vector fcould give the age, height, weight, blood
+pressure, temperature, and gender of a patient admitted to a hospital. (The last
+entry of the vector could be encoded as f6= 0 for male, f6= 1 for female.) In this
+example, the quantities represented by the entries of the vector are quite dierent,
+with dierent physical units.1.2 Vector addition 11
+Vector entry labels. In applications such as the ones described above, each entry
+of a vector has a meaning, such as the count of a specic word in a document, the
+number of shares of a specic stock held in a portfolio, or the rainfall in a specic
+hour. It is common to keep a separate list of labels or tags that explain or annotate
+the meaning of the vector entries. As an example, we might associate the portfolio
+vector (100 ;50;20) with the list of ticker symbols (AAPL, INTC, AMZN), so we
+know that assets 1, 2, and 3 are Apple, Intel, and Amazon. In some applications,
+such as an image, the meaning or ordering of the entries follow known conventions
+or standards.
+1.2 Vector addition
+Two vectors of the same size can be added together by adding the corresponding
+elements, to form another vector of the same size, called the sum of the vectors.
+Vector addition is denoted by the symbol +. (Thus the symbol + is overloaded
+to mean scalar addition when scalars appear on its left- and right-hand sides, and
+vector addition when vectors appear on its left- and right-hand sides.) For example,
+2
+40
+7
+33
+5+2
+41
+2
+03
+5=2
+41
+9
+33
+5:
+Vector subtraction is similar. As an example,
+1
+9
+ 1
+1
+=0
+8
+:
+The result of vector subtraction is called the dierence of the two vectors.
+Properties. Several properties of vector addition are easily veried. For any vec-
+torsa,b, andcof the same size we have the following.
+Vector addition is commutative :a+b=b+a.
+Vector addition is associative : (a+b) +c=a+ (b+c). We can therefore
+write both as a+b+c.
+a+ 0 = 0 +a=a. Adding the zero vector to a vector has no eect. (This
+is an example where the size of the zero vector follows from the context: It
+must be the same as the size of a.)
+a a= 0. Subtracting a vector from itself yields the zero vector. (Here too
+the size of 0 is the size of a.)
+To show that these properties hold, we argue using the denition of vector
+addition and vector equality. As an example, let us show that for any n-vectorsa
+andb, we havea+b=b+a. Theith entry of a+bis, by the denition of vector12 1 Vectors
+aba+b
+a
+bb+a
+Figure 1.6 Left. The lower blue arrow shows the displacement a; the dis-
+placementb, shown as the shorter blue arrow, starts from the head of the
+displacement aand ends at the sum displacement a+b, shown as the red
+arrow. Right. The displacement b+a.
+addition,ai+bi. Theith entry of b+aisbi+ai. For any two numbers we have
+ai+bi=bi+ai, so theith entries of the vectors a+bandb+aare the same.
+This is true for all of the entries, so by the denition of vector equality, we have
+a+b=b+a.
+Verifying identities like the ones above, and many others we will encounter
+later, can be tedious. But it is important to understand that the various properties
+we will list can be derived using elementary arguments like the one above. We
+recommend that the reader select a few of the properties we will see, and attempt
+to derive them, just to see that it can be done. (Deriving all of them is overkill.)
+Examples.
+Displacements. When vectors aandbrepresent displacements, the sum a+b
+is the net displacement found by rst displacing by a, then displacing by b,
+as shown in gure 1.6. Note that we arrive at the same vector if we rst
+displace by band thena. If the vector prepresents a position and the vector
+arepresents a displacement, then p+ais the position of the point p, displaced
+bya, as shown in gure 1.7.
+Displacements between two points. If the vectors pandqrepresent the posi-
+tions of two points in 2-D or 3-D space, then p qis the displacement vector
+fromqtop, as illustrated in gure 1.8.
+Word counts. Ifaandbare word count vectors (using the same dictionary)
+for two documents, the sum a+bis the word count vector of a new document
+created by combining the original two (in either order). The word count
+dierence vector a bgives the number of times more each word appears in
+the rst document than the second.
+Bill of materials. Supposeq1;:::;qNaren-vectors that give the quantities of
+ndierent resources required to accomplish Ntasks. Then the sum n-vector
+q1++qNgives the bill of materials for completing all Ntasks.1.2 Vector addition 13
+a
+pp+a
+Figure 1.7 The vector p+ais the position of the point represented by p
+displaced by the displacement represented by a.
+p−q
+pq
+Figure 1.8 The vector p qrepresents the displacement from the point
+represented by qto the point represented by p.14 1 Vectors
+Market clearing. Suppose the n-vectorqirepresents the quantities of n
+goods or resources produced (when positive) or consumed (when negative)
+by agenti, fori= 1;:::;N , so (q5)4= 3:2 means that agent 5 consumes
+3:2 units of resource 4. The sum s=q1++qNis then-vector of total net
+surplus of the resources (or shortfall, when the entries are negative). When
+s= 0, we have a closed market, which means that the total quantity of each
+resource produced by the agents balances the total quantity consumed. In
+other words, the nresources are exchanged among the agents. In this case
+we say that the market clears (with the resource vectors q1;:::;qN).
+Audio addition. Whenaandbare vectors representing audio signals over
+the same period of time, the sum a+bis an audio signal that is perceived as
+containing both audio signals combined into one. If arepresents a recording of
+a voice, and ba recording of music (of the same length), the audio signal a+b
+will be perceived as containing both the voice recording and, simultaneously,
+the music.
+Feature dierences. Iffandgaren-vectors that give nfeature values for two
+items, the dierence vector d=f ggives the dierence in feature values for
+the two objects. For example, d7= 0 means that the two objects have the
+same value for feature 7; d3= 1:67 means that the rst object's third feature
+value exceeds the second object's third feature value by 1 :67.
+Time series. Ifaandbrepresent time series of the same quantity, such as
+daily prot at two dierent stores, then a+brepresents a time series which is
+the total daily prot at the two stores. An example (with monthly rainfall)
+is shown in gure 1.9.
+Portfolio trading. Supposesis ann-vector giving the number of shares of n
+assets in a portfolio, and bis ann-vector giving the number of shares of the
+assets that we buy (when biis positive) or sell (when biis negative). After
+the asset purchases and sales, our portfolio is given by s+b, the sum of the
+original portfolio vector and the purchase vector b, which is also called the
+trade vector ortrade list . (The same interpretation works when the portfolio
+and trade vectors are given in dollar value.)
+Addition notation in computer languages. Some computer languages for manip-
+ulating vectors dene the sum of a vector and a scalar as the vector obtained by
+adding the scalar to each element of the vector. This is not standard mathematical
+notation, however, so we will not use it. Even more confusing, in some computer
+languages the plus symbol is used to denote concatenation of arrays, which means
+putting one array after another, as in (1 ;2) + (3;4;5) = (1;2;3;4;5). While this
+notation might give a valid expression in some computer languages, it is not stan-
+dard mathematical notation, and we will not use it in this book. In general, it is
+very important to distinguish between mathematical notation for vectors (which
+we use) and the syntax of specic computer languages or software packages for
+manipulating vectors.1.3 Scalar-vector multiplication 15
+12345678910111202468
+kRainfall (inches)Los Angeles
+San Francisco
+Sum
+Figure 1.9 Average monthly rainfall in inches measured in downtown Los
+Angeles and San Francisco International Airport, and their sum. Averages
+are 30-year averages (1981{2010).
+1.3 Scalar-vector multiplication
+Another operation is scalar multiplication orscalar-vector multiplication , in which
+a vector is multiplied by a scalar ( i.e., number), which is done by multiplying
+every element of the vector by the scalar. Scalar multiplication is denoted by
+juxtaposition, typically with the scalar on the left, as in
+( 2)2
+41
+9
+63
+5=2
+4 2
+ 18
+ 123
+5:
+Scalar-vector multiplication can also be written with the scalar on the right, as in
+2
+41
+9
+63
+5(1:5) =2
+41:5
+13:5
+93
+5:
+The meaning is the same: It is the vector obtained by multiplying each element
+by the scalar. A similar notation is a=2, whereais a vector, meaning (1 =2)a. The
+scalar-vector product (  1)ais written simply as  a. Note that 0 a= 0 (where the
+left-hand zero is the scalar zero, and the right-hand zero is a vector zero of the
+same size as a).
+Properties. By denition, we have a=a, for any scalar and any vector a.
+This is called the commutative property of scalar-vector multiplication; it means
+that scalar-vector multiplication can be written in either order.16 1 Vectors
+Scalar multiplication obeys several other laws that are easy to gure out from
+the denition. For example, it satises the associative property: If ais a vector
+andandare scalars, we have
+()a=(a):
+On the left-hand side we see scalar-scalar multiplication ( ) and scalar-vector
+multiplication; on the right-hand side we see two scalar-vector products. As a
+consequence, we can write the vector above as a, since it does not matter whether
+we interpret this as (a) or ()a.
+The associative property holds also when we denote scalar-vector multiplication
+with the scalar on the right. For example, we have (a) = (a), and consequently
+we can write both as a. As a convention, however, this vector is normally written
+asaor as ()a.
+Ifais a vector and ,are scalars, then
+(+)a=a+a:
+(This is the left-distributive property of scalar-vector multiplication.) Scalar mul-
+tiplication, like ordinary multiplication, has higher precedence in equations than
+vector addition, so the right-hand side here, a+a, means (a)+(a). It is useful
+to identify the symbols appearing in this formula above. The + symbol on the left
+is addition of scalars, while the + symbol on the right denotes vector addition.
+When scalar multiplication is written with the scalar on the right, we have the
+right-distributive property:
+a(+) =a+a:
+Scalar-vector multiplication also satises another version of the right-distributive
+property:
+(a+b) =a+b
+for any scalar and anyn-vectorsaandb. In this equation, both of the + symbols
+refer to the addition of n-vectors.
+Examples.
+Displacements. When a vector arepresents a displacement, and  > 0,a
+is a displacement in the same direction of a, with its magnitude scaled by .
+When < 0,arepresents a displacement in the opposite direction of a,
+with magnitude scaled by jj. This is illustrated in gure 1.10.
+Materials requirements. Suppose the n-vectorqis the bill of materials for
+producing one unit of some product, i.e.,qiis the amount of raw material
+required to produce one unit of product. To produce units of the product
+will then require raw materials given by q. (Here we assume that 0.)
+Audio scaling. Ifais a vector representing an audio signal, the scalar-vector
+productais perceived as the same audio signal, but changed in volume
+(loudness) by the factor jj. For example, when = 1=2 (or= 1=2),a
+is perceived as the same audio signal, but quieter.1.3 Scalar-vector multiplication 17
+a
+0.75a
+−1.5a
+Figure 1.10 The vector 0 :75arepresents the displacement in the direction of
+the displacement a, with magnitude scaled by 0 :75; ( 1:5)arepresents the
+displacement in the opposite direction, with magnitude scaled by 1 :5.
+Linear combinations. Ifa1;:::;amaren-vectors, and 1;:::;mare scalars, the
+n-vector
+1a1++mam
+is called a linear combination of the vectors a1;:::;an. The scalars 1;:::;mare
+called the coecients of the linear combination.
+Linear combination of unit vectors. We can write any n-vectorbas a linear
+combination of the standard unit vectors, as
+b=b1e1++bnen: (1.1)
+In this equation biis theith entry of b(i.e., a scalar), and eiis theith unit vector.
+In the linear combination of e1;:::;engiven in (1.1), the coecients are the entries
+of the vector b. A specic example is
+2
+4 1
+3
+53
+5= ( 1)2
+41
+0
+03
+5+ 32
+40
+1
+03
+5+ 52
+40
+0
+13
+5:
+Special linear combinations. Some linear combinations of the vectors a1;:::;am
+have special names. For example, the linear combination with 1==m= 1,
+given bya1++am, is the sum of the vectors, and the linear combination with
+1==m= 1=m, given by (1 =m)(a1++am), is the average of the vectors.
+When the coecients sum to one, i.e.,1++m= 1, the linear combination
+is called an ane combination . When the coecients in an ane combination are
+nonnegative, it is called a convex combination , amixture , or a weighted average . The
+coecients in an ane or convex combination are sometimes given as percentages,
+which add up to 100%.18 1 Vectors
+a1a2
+0.75a11.5a2b
+Figure 1.11 Left. Two 2-vectors a1anda2.Right. The linear combination
+b= 0:75a1+ 1:5a2.
+Examples.
+Displacements. When the vectors represent displacements, a linear combina-
+tion is the sum of the scaled displacements. This is illustrated in gure 1.11.
+Audio mixing. Whena1;:::;amare vectors representing audio signals (over
+the same period of time, for example, simultaneously recorded), they are
+called tracks . The linear combination 1a1++mamis perceived as a
+mixture (also called a mix) of the audio tracks, with relative loudness given
+byj1j, . . . ,jmj. A producer in a studio, or a sound engineer at a live show,
+chooses values of 1;:::;mto give a good balance between the dierent
+instruments, vocals, and drums.
+Cash ow replication. Suppose that c1;:::;cmare vectors that represent cash
+ows, such as particular types of loans or investments. The linear combination
+f=1c1++mcmrepresents another cash ow. We say that the cash
+owfhas been replicated by the (linear combination of the) original cash
+owsc1;:::;cm. As an example, c1= (1; 1:1;0) represents a $1 loan from
+period 1 to period 2 with 10% interest, and c2= (0;1; 1:1) represents a $1
+loan from period 2 to period 3 with 10% interest. The linear combination
+d=c1+ 1:1c2= (1;0; 1:21)
+represents a two period loan of $1 in period 1, with compounded 10% interest.
+Here we have replicated a two period loan from two one period loans.
+Line and segment. Whenaandbare dierent n-vectors, the ane combi-
+nationc= (1 )a+b, whereis a scalar, describes a point on the line
+passing through aandb. When 01,cis a convex combination of a
+andb, and is said to lie on the segment betweenaandb. Forn= 2 and
+n= 3, with the vectors representing coordinates of 2-D or 3-D points, this
+agrees with the usual geometric notion of line and segment. But we can also
+talk about the line passing through two vectors of dimension 100. This is
+illustrated in gure 1.12.1.4 Inner product 19
+ab
+θ= 0.4θ= 1.2
+θ=−0.4
+Figure 1.12 The ane combination (1  )a+bfor dierent values of .
+These points are on the line passing through aandb; forbetween 0 and 1,
+the points are on the line segment between aandb.
+1.4 Inner product
+The (standard) inner product (also called dot product ) of twon-vectors is dened
+as the scalar
+aTb=a1b1+a2b2++anbn;
+the sum of the products of corresponding entries. (The origin of the superscript
+`T' in the inner product notation aTbwill be explained in chapter 6.) Some other
+notations for the inner product (that we will not use in this book) are ha;bi,hajbi,
+(a;b), andab. (In the notation used in this book, ( a;b) denotes a stacked vector
+of length 2n.) As you might guess, there is also a vector outer product , which we
+will encounter later, in x10.1. As a specic example of the inner product, we have
+2
+4 1
+2
+23
+5T2
+41
+0
+ 33
+5= ( 1)(1) + (2)(0) + (2)(  3) = 7:
+Whenn= 1, the inner product reduces to the usual product of two numbers.
+Properties. The inner product satises some simple properties that are easily
+veried from the denition. If a,b, andcare vectors of the same size, and is a
+scalar, we have the following.
+Commutativity. aTb=bTa. The order of the two vector arguments in the
+inner product does not matter.
+Associativity with scalar multiplication. (a)Tb=(aTb), so we can write
+both asaTb.
+Distributivity with vector addition. (a+b)Tc=aTc+bTc. The inner product
+can be distributed across vector addition.
+These can be combined to obtain other identities, such as aT(b) =(aTb), or
+aT(b+c) =aTb+aTc. As another useful example, we have, for any vectors
+a;b;c;d of the same size,
+(a+b)T(c+d) =aTc+aTd+bTc+bTd:20 1 Vectors
+This formula expresses an inner product on the left-hand side as a sum of four
+inner products on the right-hand side, and is analogous to expanding a product of
+sums in algebra. Note that on the left-hand side, the two addition symbols refer to
+vector addition, whereas on the right-hand side, the three addition symbols refer
+to scalar (number) addition.
+General examples.
+Unit vector. eT
+ia=ai. The inner product of a vector with the ith standard
+unit vector gives (or `picks out') the ith element a.
+Sum. 1Ta=a1++an. The inner product of a vector with the vector of
+ones gives the sum of the elements of the vector.
+Average. (1=n)Ta= (a1++an)=n. The inner product of an n-vector with
+the vector 1=ngives the average or mean of the elements of the vector. The
+average of the entries of a vector is denoted by avg(x). The Greek letter 
+is a traditional symbol used to denote the average or mean.
+Sum of squares. aTa=a2
+1++a2
+n. The inner product of a vector with
+itself gives the sum of the squares of the elements of the vector.
+Selective sum. Letbbe a vector all of whose entries are either 0 or 1. Then
+bTais the sum of the elements in afor whichbi= 1.
+Block vectors. If the vectors aandbare block vectors, and the corresponding
+blocks have the same sizes (in which case we say they conform ), then we have
+aTb=2
+64a1
+:::
+ak3
+75T2
+64b1
+:::
+bk3
+75=aT
+1b1++aT
+kbk:
+The inner product of block vectors is the sum of the inner products of the blocks.
+Applications. The inner product is useful in many applications, a few of which
+we list here.
+Co-occurrence. Ifaandbaren-vectors that describe occurrence, i.e., each
+of their elements is either 0 or 1, then aTbgives the total number of indices
+for whichaiandbiare both one, that is, the total number of co-occurrences.
+If we interpret the vectors aandbas describing subsets of nobjects, then
+aTbgives the number of objects in the intersection of the two subsets. This
+is illustrated in gure 1.13, for two subsets AandBof 7 objects, labeled
+1;:::; 7, with corresponding occurrence vectors
+a= (0;1;1;1;1;1;1); b = (1;0;1;0;1;0;0):
+Here we have aTb= 2, which is the number of objects in both AandB(i.e.,
+objects 3 and 5).1.4 Inner product 21
+A B
+12
+3
+456
+7
+Figure 1.13 Two setsAandB, containing seven objects.
+Weights, features, and score. When the vector frepresents a set of features of
+an object, and wis a vector of the same size (often called a weight vector ), the
+inner product wTfis the sum of the feature values, scaled (or weighted) by
+the weights, and is sometimes called a score . For example, if the features are
+associated with a loan applicant ( e.g., age, income, . . . ), we might interpret
+s=wTfas a credit score. In this example we can interpret wias the weight
+given to feature iin forming the score.
+Price-quantity. Ifprepresents a vector of prices of ngoods, and qis a vector
+of quantities of the ngoods (say, the bill of materials for a product), then
+their inner product pTqis the total cost of the goods given by the vector q.
+Speed-time. A vehicle travels over nsegments with constant speed in each
+segment. Suppose the n-vectorsgives the speed in the segments, and the
+n-vectortgives the times taken to traverse the segments. Then sTtis the
+total distance traveled.
+Probability and expected values. Suppose the n-vectorphas nonnegative
+entries that sum to one, so it describes a set of proportions among nitems,
+or a set of probabilities of noutcomes, one of which must occur. Suppose
+fis anothern-vector, where we interpret fias the value of some quantity if
+outcomeioccurs. Then fTpgives the expected value or mean of the quantity,
+under the probabilities (or fractions) given by p.
+Polynomial evaluation. Suppose the n-vectorcrepresents the coecients of
+a polynomial pof degreen 1 or less:
+p(x) =c1+c2x++cn 1xn 2+cnxn 1:
+Lettbe a number, and let z= (1;t;t2;:::;tn 1) be then-vector of powers
+oft. ThencTz=p(t), the value of the polynomial pat the point t. So the
+inner product of a polynomial coecient vector and vector of powers of a
+number evaluates the polynomial at the number.22 1 Vectors
+Discounted total. Letcbe ann-vector representing a cash ow, with cithe
+cash received (when ci>0) in period i. Letdbe then-vector dened as
+d= (1;1=(1 +r);:::; 1=(1 +r)n 1);
+wherer0 is an interest rate. Then
+dTc=c1+c2=(1 +r) ++cn=(1 +r)n 1
+is the discounted total of the cash ow, i.e., itsnet present value (NPV), with
+interest rate r.
+Portfolio value. Supposesis ann-vector representing the holdings in shares of
+a portfolio of ndierent assets, with negative values meaning short positions.
+Ifpis ann-vector giving the prices of the assets, then pTsis the total (or
+net) value of the portfolio.
+Portfolio return. Supposeris the vector of (fractional) returns of nassets
+over some time period, i.e., the asset relative price changes
+ri=pnal
+i pinitial
+i
+pinitial
+i; i= 1;:::;n;
+wherepinitial
+i andpnal
+iare the (positive) prices of asset iat the beginning and
+end of the investment period. If his ann-vector giving our portfolio, with hi
+denoting the dollar value of asset iheld, then the inner product rThis the
+total return of the portfolio, in dollars, over the period. If wrepresents the
+fractional (dollar) holdings of our portfolio, then rTwgives the total return
+of the portfolio. For example, if rTw= 0:09, then our portfolio return is 9%.
+If we had invested $10000 initially, we would have earned $900.
+Document sentiment analysis. Suppose the n-vectorxrepresents the his-
+togram of word occurrences in a document, from a dictionary of nwords.
+Each word in the dictionary is assigned to one of three sentiment categories:
+Positive ,Negative , and Neutral . The list of positive words might include
+`nice' and `superb'; the list of negative words might include `bad' and `ter-
+rible'. Neutral words are those that are neither positive nor negative. We
+encode the word categories as an n-vectorw, withwi= 1 if word iis posi-
+tive, withwi= 1 if wordiis negative, and wi= 0 if word iis neutral. The
+numberwTxgives a (crude) measure of the sentiment of the document.
+1.5 Complexity of vector computations
+Computer representation of numbers and vectors. Real numbers are stored in
+computers using oating point format , which represents a real number using a
+block of 64 bits(0s and 1s), or 8 bytes (groups of 8 bits). Each of the 264possible
+sequences of bits corresponds to a specic real number. The oating point numbers1.5 Complexity of vector computations 23
+span a very wide range of values, and are very closely spaced, so numbers that
+arise in applications can be approximated as oating point numbers to an accuracy
+of around 10 digits, which is good enough for almost all practical applications.
+Integers are stored in a more compact format, and are represented exactly.
+Vectors are stored as arrays of oating point numbers (or integers, when the
+entries are all integers). Storing an n-vector requires 8 nbytes to store. Current
+memory and storage devices, with capacities measured in many gigabytes (109
+bytes), can easily store vectors with dimensions in the millions or billions. Sparse
+vectors are stored in a more ecient way that keeps track of indices and values of
+the nonzero entries.
+Floating point operations. When computers carry out addition, subtraction,
+multiplication, division, or other arithmetic operations on numbers represented
+in oating point format, the result is rounded to the nearest oating point number.
+These operations are called oating point operations . The very small error in the
+computed result is called (oating point) round-o error . In most applications,
+these very small errors have no practical eect. Floating point round-o errors,
+and methods to mitigate their eect, are studied in a eld called numerical analy-
+sis. In this book we will not consider oating point round-o error, but you should
+be aware that it exists. For example, when a computer evaluates the left-hand and
+right-hand sides of a mathematical identity, you should not be surprised if the two
+numbers are not equal. They should, however, be very close.
+Flop counts and complexity. So far we have seen only a few vector operations, like
+scalar multiplication, vector addition, and the inner product. How quickly these
+operations can be carried out by a computer depends very much on the computer
+hardware and software, and the size of the vector.
+A very rough estimate of the time required to carry out some computation, such
+as an inner product, can be found by counting the total number of oating point
+operations, or FLOPs. This term is in such common use that the acronym is now
+written in lower case letters, as ops, and the speed with which a computer can
+carry out ops is expressed in Gop/s (gigaops per second, i.e., billions of ops
+per second). Typical current values are in the range of 1{10 Gop/s, but this can
+vary by several orders of magnitude. The actual time it takes a computer to carry
+out some computation depends on many other factors beyond the total number of
+ops required, so time estimates based on counting ops are very crude, and are
+not meant to be more accurate than a factor of ten or so. For this reason, gross
+approximations (such as ignoring a factor of 2) can be used when counting the ops
+required in a computation.
+The complexity of an operation is the number of ops required to carry it out, as
+a function of the size or sizes of the input to the operation. Usually the complexity
+is highly simplied, dropping terms that are small or negligible (compared to other
+terms) when the sizes of the inputs are large. In theoretical computer science, the
+term `complexity' is used in a dierent way, to mean the number of ops of the best
+method to carry out the computation, i.e., the one that requires the fewest ops.
+In this book, we use the term complexity to mean the number of ops required by
+a specic method.24 1 Vectors
+Complexity of vector operations. Scalar-vector multiplication ax, wherexis an
+n-vector, requires nmultiplications, i.e.,axifori= 1;:::;n . Vector addition x+y
+of twon-vectors takes nadditions, i.e.,xi+yifori= 1;:::;n . Computing the
+inner product xTy=x1y1++xnynof twon-vectors takes 2 n 1 ops,nscalar
+multiplications and n 1 scalar additions. So scalar multiplication, vector addition,
+and the inner product of n-vectors require n,n, and 2n 1 ops, respectively.
+We only need an estimate, so we simplify the last to 2 nops, and say that the
+complexity of scalar multiplication, vector addition, and the inner product of n-
+vectors isn,n, and 2nops, respectively. We can guess that a 1 Gop/s computer
+can compute the inner product of two vectors of size one million in around one
+thousandth of a second, but we should not be surprised if the actual time diers
+by a factor of 10 from this value.
+The order of the computation is obtained by ignoring any constant that multi-
+plies a power of the dimension. So we say that the three vector operations scalar
+multiplication, vector addition, and inner product have order n. Ignoring the fac-
+tor of 2 dropped in the actual complexity of the inner product is reasonable, since
+we do not expect op counts to predict the running time with an accuracy better
+than a factor of 2. The order is useful in understanding how the time to execute
+the computation will scale when the size of the operands changes. An order n
+computation should take around 10 times longer to carry out its computation on
+an input that is 10 times bigger.
+Complexity of sparse vector operations. Ifxis sparse, then computing axre-
+quires nnz(x) ops. Ifxandyare sparse, computing x+yrequires no more than
+minfnnz(x);nnz(y)gops (since no arithmetic operations are required to compute
+(x+y)iwhen either xioryiis zero). If the sparsity patterns of xandydo not
+overlap (intersect), then zero ops are needed to compute x+y. The inner product
+calculation is similar: computing xTyrequires no more than 2 min fnnz(x);nnz(y)g
+ops. When the sparsity patterns of xandydo not overlap, computing xTyre-
+quires zero ops, since xTy= 0 in this case.Exercises 25
+Exercises
+1.1Vector equations. Determine whether each of the equations below is true, false, or contains
+bad notation (and therefore does not make sense).
+(a)"1
+2
+1#
+= (1;2;1).
+(b)"1
+2
+1#
+=
+1;2;1
+.
+(c) (1;(2;1)) = ((1;2);1).
+1.2Vector notation. Which of the following expressions uses correct notation? When the
+expression does make sense, give its length. In the following, aandbare 10-vectors, and
+cis a 20-vector.
+(a)a+b c3:12.
+(b) (a;b;c 3:13).
+(c) 2a+c.
+(d) (a;1) + (c1;b).
+(e) ((a;b);a).
+(f) [a b] + 4c.
+(g)
+a
+b
++ 4c.
+1.3Overloading. Which of the following expressions uses correct notation? If the notation is
+correct, is it also unambiguous? Assume that ais a 10-vector and bis a 20-vector.
+(a)b= (0;a).
+(b)a= (0;b).
+(c)b= (0;a;0).
+(d)a= 0 =b.
+1.4Periodic energy usage. The 168-vector wgives the hourly electricity consumption of
+a manufacturing plant, starting on Sunday midnight to 1AM, over one week, in MWh
+(megawatt-hours). The consumption pattern is the same each day, i.e., it is 24-periodic,
+which means that wt+24=wtfort= 1;:::; 144. Letdbe the 24-vector that gives the
+energy consumption over one day, starting at midnight.
+(a) Use vector notation to express win terms of d.
+(b) Use vector notation to express din terms of w.
+1.5Interpreting sparsity. Suppose the n-vectorxis sparse, i.e., has only a few nonzero entries.
+Give a short sentence or two explaining what this means in each of the following contexts.
+(a)xrepresents the daily cash ow of some business over ndays.
+(b)xrepresents the annual dollar value purchases by a customer of nproducts or ser-
+vices.
+(c)xrepresents a portfolio, say, the dollar value holdings of nstocks.
+(d)xrepresents a bill of materials for a project, i.e., the amounts of nmaterials needed.
+(e)xrepresents a monochrome image, i.e., the brightness values of npixels.
+(f)xis the daily rainfall in a location over one year.26 1 Vectors
+1.6Vector of dierences. Supposexis ann-vector. The associated vector of dierences is the
+(n 1)-vectordgiven byd= (x2 x1;x3 x2;:::;xn xn 1). Expressdin terms of x
+using vector operations ( e.g., slicing notation, sum, dierence, linear combinations, inner
+product). The dierence vector has a simple interpretation when xrepresents a time
+series. For example, if xgives the daily value of some quantity, dgives the day-to-day
+changes in the quantity.
+1.7Transforming between two encodings for Boolean vectors. A Boolean n-vector is one
+for which all entries are either 0 or 1. Such vectors are used to encode whether each
+ofnconditions holds, with ai= 1 meaning that condition iholds. Another common
+encoding of the same information uses the two values  1 and +1 for the entries. For
+example the Boolean vector (0 ;1;1;0) would be written using this alternative encoding
+as ( 1;+1;+1; 1). Suppose that xis a Boolean vector with entries that are 0 or 1, and
+yis a vector encoding the same information using the values  1 and +1. Express yin
+terms ofxusing vector notation. Also, express xin terms of yusing vector notation.
+1.8Prot and sales vectors. A company sells ndierent products or items. The n-vectorp
+gives the prot, in dollars per unit, for each of the nitems. (The entries of pare typically
+positive, but a few items might have negative entries. These items are called loss leaders ,
+and are used to increase customer engagement in the hope that the customer will make
+other, protable purchases.) The n-vectorsgives the total sales of each of the items, over
+some period (such as a month), i.e.,siis the total number of units of item isold. (These
+are also typically nonnegative, but negative entries can be used to reect items that were
+purchased in a previous time period and returned in this one.) Express the total prot in
+terms ofpandsusing vector notation.
+1.9Symptoms vector. A 20-vector srecords whether each of 20 dierent symptoms is present
+in a medical patient, with si= 1 meaning the patient has the symptom and si= 0
+meaning she does not. Express the following using vector notation.
+(a) The total number of symptoms the patient has.
+(b) The patient exhibits ve out of the rst ten symptoms.
+1.10 Total score from course record. The record for each student in a class is given as a 10-
+vectorr, wherer1;:::;r 8are the grades for the 8 homework assignments, each on a 0{10
+scale,r9is the midterm exam grade on a 0{120 scale, and r10is nal exam score on a
+0{160 scale. The student's total course score s, on a 0{100 scale, is based 25% on the
+homework, 35% on the midterm exam, and 40% on the nal exam. Express sin the form
+s=wTr. (That is, determine the 10-vector w.) You can give the coecients of wto 4
+digits after the decimal point.
+1.11 Word count and word count histogram vectors. Suppose the n-vectorwis the word count
+vector associated with a document and a dictionary of nwords. For simplicity we will
+assume that all words in the document appear in the dictionary.
+(a) What is 1Tw?
+(b) What does w282= 0 mean?
+(c) Lethbe then-vector that gives the histogram of the word counts, i.e.,hiis the
+fraction of the words in the document that are word i. Use vector notation to express
+hin terms of w. (You can assume that the document contains at least one word.)
+1.12 Total cash value. An international company holds cash in ve currencies: USD (US
+dollar), RMB (Chinese yuan), EUR (euro), GBP (British pound), and JPY (Japanese
+yen), in amounts given by the 5-vector c. For example, c2gives the number of RMB held.
+Negative entries in crepresent liabilities or amounts owed. Express the total (net) value
+of the cash in USD, using vector notation. Be sure to give the size and dene the entries
+of any vectors that you introduce in your solution. Your solution can refer to currency
+exchange rates.Exercises 27
+1.13 Average age in a population. Suppose the 100-vector xrepresents the distribution of ages
+in some population of people, with xibeing the number of i 1 year olds, for i= 1;:::; 100.
+(You can assume that x6= 0, and that there is no one in the population over age 99.)
+Find expressions, using vector notation, for the following quantities.
+(a) The total number of people in the population.
+(b) The total number of people in the population age 65 and over.
+(c) The average age of the population. (You can use ordinary division of numbers in
+your expression.)
+1.14 Industry or sector exposure. Consider a set of nassets or stocks that we invest in. Let
+fbe ann-vector that encodes whether each asset is in some specic industry or sector,
+e.g., pharmaceuticals or consumer electronics. Specically, we take fi= 1 if asset iis in
+the sector, and fi= 0 if it is not. Let the n-vectorhdenote a portfolio, with hithe dollar
+value held in asset i(with negative meaning a short position). The inner product fTh
+is called the (dollar value) exposure of our portfolio to the sector. It gives the net dollar
+value of the portfolio that is invested in assets from the sector. A portfolio his called
+neutral (to a sector or industry) if fTh= 0.
+A portfolio his called long only if each entry is nonnegative, i.e.,hi0 for eachi. This
+means the portfolio does not include any short positions.
+What does it mean if a long-only portfolio is neutral to a sector, say, pharmaceuticals?
+Your answer should be in simple English, but you should back up your conclusion with
+an argument.
+1.15 Cheapest supplier. You must buy nraw materials in quantities given by the n-vectorq,
+whereqiis the amount of raw material ithat you must buy. A set of Kpotential suppliers
+oer the raw materials at prices given by the n-vectorsp1;:::;pK. (Note that pkis an
+n-vector; (pk)iis the price that supplier kcharges per unit of raw material i.) We will
+assume that all quantities and prices are positive.
+If you must choose just one supplier, how would you do it? Your answer should use vector
+notation.
+A (highly paid) consultant tells you that you might do better ( i.e., get a better total cost)
+by splitting your order into two, by choosing two suppliers and ordering (1 =2)q(i.e., half
+the quantities) from each of the two. He argues that having a diversity of suppliers is
+better. Is he right? If so, explain how to nd the two suppliers you would use to ll half
+the order.
+1.16 Inner product of nonnegative vectors. A vector is called nonnegative if all its entries are
+nonnegative.
+(a) Explain why the inner product of two nonnegative vectors is nonnegative.
+(b) Suppose the inner product of two nonnegative vectors is zero. What can you say
+about them? Your answer should be in terms of their respective sparsity patterns,
+i.e., which entries are zero and nonzero.
+1.17 Linear combinations of cash ows. We consider cash ow vectors over Ttime periods,
+with a positive entry meaning a payment received, and negative meaning a payment
+made. A (unit) single period loan , at time period t, is theT-vectorltthat corresponds
+to a payment received of $1 in period tand a payment made of $(1 + r) in period t+ 1,
+with all other payments zero. Here r>0 is the interest rate (over one period).
+Letcbe a $1T 1 period loan, starting at period 1. This means that $1 is received in
+period 1, $(1 + r)T 1is paid in period T, and all other payments ( i.e.,c2;:::;cT 1) are
+zero. Express cas a linear combination of single period loans.
+1.18 Linear combinations of linear combinations. Suppose that each of the vectors b1;:::;bkis
+a linear combination of the vectors a1;:::;am, andcis a linear combination of b1;:::;bk.
+Thencis a linear combination of a1;:::;am. Show this for the case with m=k= 2.
+(Showing it in general is not much more dicult, but the notation gets more complicated.)28 1 Vectors
+1.19 Auto-regressive model. Suppose that z1;z2;:::is a time series, with the number ztgiving
+the value in period or time t. For example ztcould be the gross sales at a particular store
+on dayt. An auto-regressive (AR) model is used to predict zt+1from the previous M
+values,zt;zt 1;:::;zt M+1:
+^zt+1= (zt;zt 1;:::;zt M+1)T; t =M;M + 1;::::
+Here ^zt+1denotes the AR model's prediction of zt+1,Mis the memory length of the
+AR model, and the M-vectoris the AR model coecient vector. For this problem we
+will assume that the time period is daily, and M= 10. Thus, the AR model predicts
+tomorrow's value, given the values over the last 10 days.
+For each of the following cases, give a short interpretation or description of the AR model
+in English, without referring to mathematical concepts like vectors, inner product, and
+so on. You can use words like `yesterday' or `today'.
+(a)e1.
+(b)2e1 e2.
+(c)e6.
+(d)0:5e1+ 0:5e2.
+1.20 How many bytes does it take to store 100 vectors of length 105? How many ops does
+it take to form a linear combination of them (with 100 nonzero coecients)? About how
+long would this take on a computer capable of carrying out 1 Gop/s?Chapter 2
+Linear functions
+In this chapter we introduce linear and ane functions, and describe some common
+settings where they arise, including regression models.
+2.1 Linear functions
+Function notation. The notation f:Rn!Rmeans that fis a function that
+maps realn-vectors to real numbers, i.e., it is a scalar-valued function of n-vectors.
+Ifxis ann-vector, then f(x), which is a scalar, denotes the value of the function f
+atx. (In the notation f(x),xis referred to as the argument of the function.) We
+can also interpret fas a function of nscalar arguments, the entries of the vector
+argument, in which case we write f(x) as
+f(x) =f(x1;x2;:::;xn):
+Here we refer to x1;:::;xnas the arguments of f. We sometimes say that fis
+real-valued, or scalar-valued, to emphasize that f(x) is a real number or scalar.
+To describe a function f:Rn!R, we have to specify what its value is for any
+possible argument x2Rn. For example, we can dene a function f:R4!Rby
+f(x) =x1+x2 x2
+4
+for any 4-vector x. In words, we might describe fas the sum of the rst two
+elements of its argument, minus the square of the last entry of the argument.
+(This particular function does not depend on the third element of its argument.)
+Sometimes we introduce a function without formally assigning a symbol for it,
+by directly giving a formula for its value in terms of its arguments, or describing
+how to nd its value from its arguments. An example is the sum function , whose
+value isx1++xn. We can give a name to the value of the function, as in
+y=x1++xn, and say that yis a function of x, in this case, the sum of its
+entries.
+Many functions are not given by formulas or equations. As an example, suppose
+f:R3!Ris the function that gives the lift (vertical upward force) on a particular30 2 Linear functions
+airplane, as a function of the 3-vector x, wherex1is the angle of attack of the
+airplane ( i.e., the angle between the airplane body and its direction of motion), x2
+is its air speed, and x3is the air density.
+The inner product function. Supposeais ann-vector. We can dene a scalar-
+valued function fofn-vectors, given by
+f(x) =aTx=a1x1+a2x2++anxn (2.1)
+for anyn-vectorx. This function gives the inner product of its n-vector argument x
+with some (xed) n-vectora. We can also think of fas forming a weighted sum of
+the elements of x; the elements of agive the weights used in forming the weighted
+sum.
+Superposition and linearity. The inner product function fdened in (2.1) satises
+the property
+f(x+y) =aT(x+y)
+=aT(x) +aT(y)
+=(aTx) +(aTy)
+=f(x) +f(y)
+for alln-vectorsx,y, and all scalars ,. This property is called superposition .
+A function that satises the superposition property is called linear . We have just
+shown that the inner product with a xed vector is a linear function.
+The superposition equality
+f(x+y) =f(x) +f(y) (2.2)
+looks deceptively simple; it is easy to read it as just a re-arrangement of the paren-
+theses and the order of a few terms. But in fact it says a lot. On the left-hand
+side, the term x+yinvolves scalar-vector multiplication and vector addition .
+On the right-hand side, f(x) +f(y) involves ordinary scalar multiplication and
+scalar addition .
+If a function fis linear, superposition extends to linear combinations of any
+number of vectors, and not just linear combinations of two vectors: We have
+f(1x1++kxk) =1f(x1) ++kf(xk);
+for anynvectorsx1;:::;xk, and any scalars 1;:::;k. (This more general k-term
+form of superposition reduces to the two-term form given above when k= 2.) To
+see this, we note that
+f(1x1++kxk) =1f(x1) +f(2x2++kxk)
+=1f(x1) +2f(x2) +f(3x3++kxk)
+:::
+=1f(x1) ++kf(xk):2.1 Linear functions 31
+In the rst line here, we apply (two-term) superposition to the argument
+1x1+ (1)(2x2++kxk);
+and in the other lines we apply this recursively.
+The superposition equality (2.2) is sometimes broken down into two proper-
+ties, one involving the scalar-vector product and one involving vector addition in
+the argument. A function f:Rn!Ris linear if it satises the following two
+properties.
+Homogeneity. For anyn-vectorxand any scalar ,f(x) =f(x).
+Additivity. For anyn-vectorsxandy,f(x+y) =f(x) +f(y).
+Homogeneity states that scaling the (vector) argument is the same as scaling the
+function value; additivity says that adding (vector) arguments is the same as adding
+the function values.
+Inner product representation of a linear function. We saw above that a function
+dened as the inner product of its argument with some xed vector is linear. The
+converse is also true: If a function is linear, then it can be expressed as the inner
+product of its argument with some xed vector.
+Supposefis a scalar-valued function of n-vectors, and is linear, i.e., (2.2) holds
+for alln-vectorsx,y, and all scalars ,. Then there is an n-vectorasuch that
+f(x) =aTxfor allx. We callaTxtheinner product representation off.
+To see this, we use the identity (1.1) to express an arbitrary n-vectorxas
+x=x1e1++xnen. Iffis linear, then by multi-term superposition we have
+f(x) =f(x1e1++xnen)
+=x1f(e1) ++xnf(en)
+=aTx;
+witha= (f(e1);f(e2);:::;f (en)). The formula just derived,
+f(x) =x1f(e1) +x2f(e2) ++xnf(en) (2.3)
+which holds for any linear scalar-valued function f, has several interesting impli-
+cations. Suppose, for example, that the linear function fis given as a subroutine
+(or a physical system) that computes (or results in the output) f(x) when we give
+the argument (or input) x. Once we have found f(e1), . . . ,f(en), byncalls to the
+subroutine (or nexperiments), we can predict (or simulate) what f(x) will be, for
+anyvectorx, using the formula (2.3).
+The representation of a linear function fasf(x) =aTxisunique , which means
+that there is only one vector afor whichf(x) =aTxholds for all x. To see this,
+suppose that we have f(x) =aTxfor allx, and alsof(x) =bTxfor allx. Taking
+x=ei, we havef(ei) =aTei=ai, using the formula f(x) =aTx. Using the
+formulaf(x) =bTx, we havef(ei) =bTei=bi. These two numbers must be the
+same, so we have ai=bi. Repeating this argument for i= 1;:::;n , we conclude
+that the corresponding elements in aandbare the same, so a=b.32 2 Linear functions
+Examples.
+Average. The mean oraverage value of an n-vector is dened as
+f(x) = (x1+x2++xn)=n;
+and is denoted avg(x) (and sometimes x). The average of a vector is a linear
+function. It can be expressed as avg(x) =aTxwith
+a= (1=n;:::; 1=n) =1=n:
+Maximum. The maximum element of an n-vectorx,f(x) = maxfx1;:::;xng,
+is not a linear function (except when n= 1). We can show this by a coun-
+terexample for n= 2. Take x= (1; 1),y= ( 1;1),= 1=2,= 1=2.
+Then
+f(x+y) = 06=f(x) +f(y) = 1:
+Ane functions. A linear function plus a constant is called an ane function. A
+functionf:Rn!Ris ane if and only if it can be expressed as f(x) =aTx+b
+for somen-vectoraand scalarb, which is sometimes called the oset . For example,
+the function on 3-vectors dened by
+f(x) = 2:3 2x1+ 1:3x2 x3;
+is ane, with b= 2:3,a= ( 2;1:3; 1).
+Any ane scalar-valued function satises the following variation on the super-
+position property:
+f(x+y) =f(x) +f(y);
+for alln-vectorsx,y, and all scalars ,that satisfy += 1. For linear functions,
+superposition holds for anycoecients and; for ane functions, it holds when
+the coecients sum to one (i.e., when the argument is an ane combination).
+To see that the restricted superposition property holds for an ane function
+f(x) =aTx+b, we note that, for any vectors x,yand scalars andthat satisfy
++= 1,
+f(x+y) =aT(x+y) +b
+=aTx+aTy+ (+)b
+=(aTx+b) +(aTy+b)
+=f(x) +f(y):
+(In the second line we use += 1.)
+This restricted superposition property for ane functions is useful in showing
+that a function fisnotane: We nd vectors x,y, and numbers andwith
++= 1, and verify that f(x+y)6=f(x) +f(y). This shows that fcannot
+be ane. As an example, we veried above that superposition does not hold for
+the maximum function (with n > 1); the coecients in our counterexample are
+== 1=2, which sum to one, which allows us to conclude that the maximum
+function is not ane.2.1 Linear functions 33
+xf(x)
+xg(x)
+Figure 2.1 Left. The function fis linear. Right. The function gis ane,
+but not linear.
+The converse is also true: Any scalar-valued function that satises the restricted
+superposition property is ane. An analog of the formula (2.3) is
+f(x) =f(0) +x1(f(e1) f(0)) ++xn(f(en) f(0)); (2.4)
+which holds when fis ane, and xis anyn-vector. (See exercise 2.7.) This formula
+shows that for an ane function, once we know the n+1 numbers f(0),f(e1), . . . ,
+f(en), we can predict (or reconstruct or evaluate) f(x) for anyn-vectorx. It also
+shows how the vector aand constant bin the representation f(x) =aTx+bcan
+be found from the function f:ai=f(ei) f(0), andb=f(0).
+In some contexts ane functions are called linear. For example, when xis a
+scalar, the function fdened asf(x) =x+is sometimes referred to as a linear
+function of x, perhaps because its graph is a line. But when 6= 0,fis not a linear
+function of x, in the standard mathematical sense; it isan ane function of x.
+In this book we will distinguish between linear and ane functions. Two simple
+examples are shown in gure 2.1.
+A civil engineering example. Many scalar-valued functions that arise in science
+and engineering are well approximated by linear or ane functions. As a typical
+example, consider a steel structure like a bridge, and let wbe ann-vector that
+gives the weight of the load on the bridge in nspecic locations, in metric tons.
+These loads will cause the bridge to deform (move and change shape) slightly.
+Letsdenote the distance that a specic point on the bridge sags, in millimeters,
+due to the load w. This is shown in gure 2.2. For weights the bridge is designed
+to handle, the sag is very well approximated as a linear function s=f(x). This
+function can be expressed as an inner product, s=cTw, for somen-vectorc. From
+the equation s=c1w1++cnwn, we see that c1w1is the amount of the sag that
+is due to the weight w1, and similarly for the other weights. The coecients ci,
+which have units of mm/ton, are called compliances , and give the sensitivity of the
+sag with respect to loads applied at the nlocations.
+The vector ccan be computed by (numerically) solving a partial dierential
+equation, given the detailed design of the bridge and the mechanical properties of34 2 Linear functions
+w1 w2 w3
+s
+Figure 2.2 A bridge with weights w1;w2;w3applied in 3 locations. These
+weights cause the bridge to sag in the middle, by an amount s. (The sag is
+exaggerated in this diagram.)2.2 Taylor approximation 35
+w1w2w3Measured sag Predicted sag
+1 0 0 0 :12 |
+0 1 0 0 :31 |
+0 0 1 0 :26 |
+0:5 1:1 0:3 0:481 0 :479
+1:5 0:8 1:2 0:736 0 :740
+Table 2.1 Loadings on a bridge (rst three columns), the associated mea-
+sured sag at a certain point (fourth column), and the predicted sag using
+the linear model constructed from the rst three experiments (fth column).
+the steel used to construct it. This is always done during the design of a bridge.
+The vector ccan also be measured once the bridge is built, using the formula (2.3).
+We apply the load w=e1, which means that we place a one ton load at the rst
+load position on the bridge, with no load at the other positions. We can then
+measure the sag, which is c1. We repeat this experiment, moving the one ton load
+to positions 2 ;3;:::;n , which gives us the coecients c2;:::;cn. At this point
+we have the vector c, so we can now predict what the sag will be with any other
+loading. To check our measurements (and linearity of the sag function) we might
+measure the sag under other more complicated loadings, and in each case compare
+our prediction ( i.e.,cTw) with the actual measured sag.
+Table 2.1 shows what the results of these experiments might look like, with each
+row representing an experiment ( i.e., placing the loads and measuring the sag). In
+the last two rows we compare the measured sag and the predicted sag, using the
+linear function with coecients found in the rst three experiments.
+2.2 Taylor approximation
+In many applications, scalar-valued functions of nvariables, or relations between
+nvariables and a scalar one, can be approximated as linear or ane functions. In
+these cases we sometimes refer to the linear or ane function relating the vari-
+ables and the scalar variable as a model , to remind us that the relation is only an
+approximation, and not exact.
+Dierential calculus gives us an organized way to nd an approximate ane
+model. Suppose that f:Rn!Ris dierentiable, which means that its par-
+tial derivatives exist (see xC.1). Letzbe ann-vector. The (rst-order) Taylor
+approximation offnear (or at) the point zis the function ^f(x) ofxdened as
+^f(x) =f(z) +@f
+@x1(z)(x1 z1) ++@f
+@xn(z)(xn zn);
+where@f
+@xi(z) denotes the partial derivative of fwith respect to its ith argument,
+evaluated at the n-vectorz. The hat appearing over fon the left-hand side is36 2 Linear functions
+a common notational hint that it is an approximation of the function f. (The
+approximation is named after the mathematician Brook Taylor.)
+The rst-order Taylor approximation ^f(x) is a very good approximation of f(x)
+when allxiare near the associated zi. Sometimes ^fis written with a second vector
+argument, as ^f(x;z), to show the point zat which the approximation is developed.
+The rst term in the Taylor approximation is a constant; the other terms can be
+interpreted as the contributions to the (approximate) change in the function value
+(fromf(z)) due to the changes in the components of x(fromz).
+Evidently ^fis an ane function of x. (It is sometimes called the linear approx-
+imation offnearz, even though it is in general ane, and not linear.) It can be
+written compactly using inner product notation as
+^f(x) =f(z) +rf(z)T(x z); (2.5)
+whererf(z) is ann-vector, the gradient of f(at the point z),
+rf(z) =2
+64@f
+@x1(z)
+:::
+@f
+@xn(z)3
+75: (2.6)
+The rst term in the Taylor approximation (2.5) is the constant f(z), the value of
+the function when x=z. The second term is the inner product of the gradient of
+fatzand the deviation orperturbation ofxfromz,i.e.,x z.
+We can express the rst-order Taylor approximation as a linear function plus a
+constant,
+^f(x) =rf(z)Tx+ (f(z) rf(z)Tz);
+but the form (2.5) is perhaps easier to interpret.
+The rst-order Taylor approximation gives us an organized way to construct
+an ane approximation of a function f:Rn!R, near a given point z, when
+there is a formula or equation that describes f, and it is dierentiable. A simple
+example, for n= 1, is shown in gure 2.3. Over the full x-axis scale shown, the
+Taylor approximation ^fdoes not give a good approximation of the function f. But
+forxnearz, the Taylor approximation is very good.
+Example. Consider the function f:R2!Rgiven byf(x) =x1+ exp(x2 x1),
+which is not linear or ane. To nd the Taylor approximation ^fnear the point
+z= (1;2), we take partial derivatives to obtain
+rf(z) =
+1 exp(z2 z1)
+exp(z2 z1)
+;
+which evaluates to (  1:7183;2:7183) atz= (1;2). The Taylor approximation at
+z= (1;2) is then
+^f(x) = 3:7183 + ( 1:7183;2:7183)T(x (1;2))
+= 3:7183 1:7183(x1 1) + 2:7183(x2 2):
+Table 2.2 shows f(x) and ^f(x), and the approximation error j^f(x) f(x)j, for some
+values ofxrelatively near z. We can see that ^fis indeed a very good approximation
+off, especially when xis nearz.2.2 Taylor approximation 37
+zˆf(x)f(x)
+Figure 2.3 A function fof one variable, and the rst-order Taylor approxi-
+mation ^f(x) =f(z) +f0(z)(x z) atz.
+x f (x) ^f(x)j^f(x) f(x)j
+(1:00;2:00) 3.7183 3.7183 0.0000
+(0:96;1:98) 3.7332 3.7326 0.0005
+(1:10;2:11) 3.8456 3.8455 0.0001
+(0:85;2:05) 4.1701 4.1119 0.0582
+(1:25;2:41) 4.4399 4.4032 0.0367
+Table 2.2 Some values of x(rst column), the function value f(x) (sec-
+ond column), the Taylor approximation ^f(x) (third column), and the error
+(fourth column).38 2 Linear functions
+2.3 Regression model
+In this section we describe a very commonly used ane function, especially when
+then-vectorxrepresents a feature vector. The ane function of xgiven by
+^y=xT+v; (2.7)
+whereis ann-vector and vis a scalar, is called a regression model . In this context,
+the entries of xare called the regressors , and ^yis called the prediction , since the
+regression model is typically an approximation or prediction of some true value y,
+which is called the dependent variable ,outcome , orlabel.
+The vector is called the weight vector orcoecient vector , and the scalar
+vis called the oset orintercept in the regression model. Together, andvare
+called the parameters in the regression model. (We will see in chapter 13 how the
+parameters in a regression model can be estimated or guessed, based on some past
+or known observations of the feature vector xand the associated outcome y.) The
+symbol ^yis used in the regression model to emphasize that it is an estimate or
+prediction of some outcome y.
+The entries in the weight vector have a simple interpretation: iis the amount
+by which ^yincreases (if i>0) when feature iincreases by one (with all other
+features the same). If iis small, the prediction ^ ydoesn't depend too strongly on
+featurei. The oset vis the value of ^ ywhen all features have the value 0.
+The regression model is very interpretable when all of the features are Boolean,
+i.e., have values that are either 0 or 1, which occurs when the features represent
+which of two outcomes holds. As a simple example consider a regression model
+for the lifespan of a person in some group, with x1= 0 if the person is female
+(x1= 1 if male), x2= 1 if the person has type II diabetes, and x3= 1 if the person
+smokes cigarettes. In this case, vis the regression model estimate for the lifespan
+of a female nondiabetic nonsmoker; 1is the increase in estimated lifespan if the
+person is male, 2is the increase in estimated lifespan if the person is diabetic,
+and3is the increase in estimated lifespan if the person smokes cigarettes. (In a
+model that ts real data, all three of these coecients would be negative, meaning
+that they decrease the regression model estimate of lifespan.)
+Simplied regression model notation. Vector stacking can be used to lump the
+weights and oset in the regression model (2.7) into a single parameter vector,
+which simplies the regression model notation a bit. We create a new regressor
+vector ~x, withn+ 1 entries, as ~ x= (1;x). We can think of ~ xas a new feature
+vector, consisting of all noriginal features, and one new feature added (~ x1) at
+the beginning, which always has the value one. We dene the parameter vector
+~= (v;), so the regression model (2.7) has the simple inner product form
+^y=xT+v=1
+xTv
+
+= ~xT~: (2.8)
+Often we omit the tildes, and simply write this as ^ y=xT, where we assume that
+the rst feature in xis the constant 1. A feature that always has the value 1 is
+not particularly informative or interesting, but it does simplify the notation in a
+regression model.2.3 Regression model 39
+Housex1(area)x2(beds)y(price) ^y(prediction)
+1 0.846 1 115.00 161.37
+2 1.324 2 234.50 213.61
+3 1.150 3 198.00 168.88
+4 3.037 4 528.00 430.67
+5 3.984 5 572.50 552.66
+Table 2.3 Five houses with associated feature vectors shown in the second
+and third columns. The fourth and fth column give the actual price, and
+the price predicted by the regression model.
+House price regression model. As a simple example of a regression model, sup-
+pose thatyis the selling price of a house in some neighborhood, over some time
+period, and the 2-vector xcontains attributes of the house:
+x1is the house area (in 1000 square feet),
+x2is the number of bedrooms.
+Ifyrepresents the selling price of the house, in thousands of dollars, the regression
+model
+^y=xT+v=1x1+2x2+v
+predicts the price in terms of the attributes or features. This regression model is
+not meant to describe an exact relationship between the house attributes and its
+selling price; it is a model or approximation. Indeed, we would expect such a model
+to give, at best, only a crude approximation of selling price.
+As a specic numerical example, consider the regression model parameters
+= (148:73; 18:85); v = 54:40: (2.9)
+These parameter values were found using the methods we will see in chapter 13,
+based on records of sales for 774 houses in the Sacramento area. Table 2.3 shows
+the feature vectors xfor ve houses that sold during the period, the actual sale
+pricey, and the predicted price ^ yfrom the regression model above. Figure 2.4
+shows the predicted and actual sale prices for 774 houses, including the ve houses
+in the table, on a scatter plot, with actual price on the horizontal axis and predicted
+price on the vertical axis.
+We can see that this particular regression model gives reasonable, but not very
+accurate, predictions of the actual sale price. (Regression models for house prices
+that are used in practice use many more than two regressors, and are much more
+accurate.)
+The model parameters in (2.9) are readily interpreted. The parameter 1=
+148:73 is the amount the regression model price prediction increases (in thousands
+of dollars) when the house area increases by 1000 square feet (with the same number
+of bedrooms). The parameter 2= 18:85 is the price prediction increase with
+the addition of one bedroom, with the total house area held constant, in units of40 2 Linear functions
+0 200 400 600 8000200400600800
+House 1
+House 2
+House 3House 4House 5
+Actual price y(thousand dollars)Predicted price ˆy(thousand dollars)
+Figure 2.4 Scatter plot of actual and predicted sale prices for 774 houses
+sold in Sacramento during a ve-day period.2.3 Regression model 41
+thousands of dollars per bedroom. It might seem strange that 2is negative, since
+one imagines that adding a bedroom to a house would increase its sale price, not
+decrease it. To understand why 2might be negative, we note that it gives the
+change in predicted price when we add a bedroom, without adding any additional
+area to the house. If we remodel a house by adding a bedroom that alsoadds more
+than around 127 square feet to the house area, the regression model (2.9) does
+predict an increase in house sale price. The oset v= 54:40 is the predicted price
+for a house with no area and no bedrooms, which we might interpret as the model's
+prediction of the value of the lot. But this regression model is crude enough that
+these interpretations are dubious.42 2 Linear functions
+Exercises
+2.1Linear or not? Determine whether each of the following scalar-valued functions of n-
+vectors is linear. If it is a linear function, give its inner product representation, i.e., an
+n-vectorafor whichf(x) =aTxfor allx. If it is not linear, give specic x,y,, and
+for which superposition fails, i.e.,
+f(x+y)6=f(x) +f(y):
+(a) The spread of values of the vector, dened as f(x) = maxkxk minkxk.
+(b) The dierence of the last element and the rst, f(x) =xn x1.
+(c) The median of an n-vector, where we will assume n= 2k+ 1 is odd. The median of
+the vectorxis dened as the ( k+ 1)st largest number among the entries of x. For
+example, the median of (  7:1;3:2; 1:5) is 1:5.
+(d) The average of the entries with odd indices, minus the average of the entries with
+even indices. You can assume that n= 2kis even.
+(e) Vector extrapolation, dened as xn+ (xn xn 1), forn2. (This is a simple
+prediction of what xn+1would be, based on a straight line drawn through xnand
+xn 1.)
+2.2Processor powers and temperature. The temperature Tof an electronic device containing
+three processors is an ane function of the power dissipated by the three processors,
+P= (P1;P2;P3). When all three processors are idling, we have P= (10;10;10), which
+results in a temperature T= 30. When the rst processor operates at full power and
+the other two are idling, we have P= (100;10;10), and the temperature rises to T= 60.
+When the second processor operates at full power and the other two are idling, we have
+P= (10;100;10) andT= 70. When the third processor operates at full power and the
+other two are idling, we have P= (10;10;100) andT= 65. Now suppose that all three
+processors are operated at the same power Psame. How large can Psamebe, if we require
+thatT85? Hint. From the given data, nd the 3-vector aand number bfor which
+T=aTP+b.
+2.3Motion of a mass in response to applied force. A unit mass moves on a straight line (in
+one dimension). The position of the mass at time t(in seconds) is denoted by s(t), and its
+derivatives (the velocity and acceleration) by s0(t) ands00(t). The position as a function
+of time can be determined from Newton's second law
+s00(t) =F(t);
+whereF(t) is the force applied at time t, and the initial conditions s(0),s0(0). We assume
+F(t) is piecewise-constant, and is kept constant in intervals of one second. The sequence
+of forcesF(t), for 0t<10, can then be represented by a 10-vector f, with
+F(t) =fk; k 1t<k:
+Derive expressions for the nal velocity s0(10) and nal position s(10). Show that s(10)
+ands0(10) are ane functions of x, and give 10-vectors a;cand constants b;dfor which
+s0(10) =aTf+b; s (10) =cTf+d:
+This means that the mapping from the applied force sequence to the nal position and
+velocity is ane.
+Hint. You can use
+s0(t) =s0(0) +Zt
+0F()d; s (t) =s(0) +Zt
+0s0()d:
+You will nd that the mass velocity s0(t) is piecewise-linear.Exercises 43
+2.4Linear function? The function :R3!Rsatises
+(1;1;0) = 1;  ( 1;1;1) = 1;  (1; 1; 1) = 1:
+Choose one of the following, and justify your choice: must be linear; could be linear;
+cannot be linear.
+2.5Ane function. Suppose :R2!Ris an ane function, with  (1;0) = 1, (1; 2) = 2.
+(a) What can you say about  (1; 1)? Either give the value of  (1; 1), or state that
+it cannot be determined.
+(b) What can you say about  (2; 2)? Either give the value of  (2; 2), or state that
+it cannot be determined.
+Justify your answers.
+2.6Questionnaire scoring. A questionnaire in a magazine has 30 questions, broken into
+two sets of 15 questions. Someone taking the questionnaire answers each question with
+`Rarely', `Sometimes', or `Often'. The answers are recorded as a 30-vector a, withai=
+1;2;3 if question iis answered Rarely, Sometimes, or Often, respectively. The total score
+on a completed questionnaire is found by adding up 1 point for every question answered
+Sometimes and 2 points for every question answered Often on questions 1{15, and by
+adding 2 points and 4 points for those responses on questions 16{30. (Nothing is added to
+the score for Rarely responses.) Express the total score sin the form of an ane function
+s=wTa+v, wherewis a 30-vector and vis a scalar (number).
+2.7General formula for ane functions. Verify that formula (2.4) holds for any ane function
+f:Rn!R. You can use the fact that f(x) =aTx+bfor somen-vectoraand scalarb.
+2.8Integral and derivative of polynomial. Suppose the n-vectorcgives the coecients of a
+polynomial p(x) =c1+c2x++cnxn 1.
+(a) Letandbe numbers with < . Find ann-vectorafor which
+aTc=Z
+p(x)dx
+always holds. This means that the integral of a polynomial over an interval is a
+linear function of its coecients.
+(b) Letbe a number. Find an n-vectorbfor which
+bTc=p0():
+This means that the derivative of the polynomial at a given point is a linear function
+of its coecients.
+2.9Taylor approximation. Consider the function f:R2!Rgiven byf(x1;x2) =x1x2.
+Find the Taylor approximation ^fat the point z= (1;1). Compare f(x) and ^f(x) for the
+following values of x:
+x= (1;1); x = (1:05;0:95); x = (0:85;1:25); x = ( 1;2):
+Make a brief comment about the accuracy of the Taylor approximation in each case.
+2.10 Regression model. Consider the regression model ^ y=xT+v, where ^yis the predicted
+response,xis an 8-vector of features, is an 8-vector of coecients, and vis the oset
+term. Determine whether each of the following statements is true or false.
+(a) If3>0 andx3>0, then ^y0.
+(b) If2= 0 then the prediction ^ ydoes not depend on the second feature x2.
+(c) If6= 0:8, then increasing x6(keeping all other xis the same) will decrease ^ y.44 2 Linear functions
+2.11 Sparse regression weight vector. Suppose that xis ann-vector that gives nfeatures for
+some object, and the scalar yis some outcome associated with the object. What does it
+mean if a regression model ^ y=xT+vuses a sparse weight vector ? Give your answer
+in English, referring to ^ yas our prediction of the outcome.
+2.12 Price change to maximize prot. A business sells nproducts, and is considering changing
+the price of oneof the products to increase its total prots. A business analyst develops a
+regression model that (reasonably accurately) predicts the total prot when the product
+prices are changed, given by ^P=Tx+P, where the n-vectorxdenotes the fractional
+change in the product prices, xi= (pnew
+i pi)=pi. HerePis the prot with the current
+prices, ^Pis the predicted prot with the changed prices, piis the current (positive) price
+of producti, andpnew
+iis the new price of product i.
+(a) What does it mean if 3<0? (And yes, this can occur.)
+(b) Suppose that you are given permission to change the price of oneproduct, by up
+to 1%, to increase total prot. Which product would you choose, and would you
+increase or decrease the price? By how much?
+(c) Repeat part (b) assuming you are allowed to change the price of two products, each
+by up to 1%.Chapter 3
+Norm and distance
+In this chapter we focus on the norm of a vector, a measure of its magnitude, and
+on related concepts like distance, angle, standard deviation, and correlation.
+3.1 Norm
+The Euclidean norm of ann-vectorx(named after the Greek mathematician Eu-
+clid), denotedkxk, is the squareroot of the sum of the squares of its elements,
+kxk=q
+x2
+1+x2
+2++x2n:
+The Euclidean norm can also be expressed as the squareroot of the inner product
+of the vector with itself, i.e.,kxk=p
+xTx.
+The Euclidean norm is sometimes written with a subscript 2, as kxk2. (The
+subscript 2 indicates that the entries of xare raised to the second power.) Other
+less widely used terms for the Euclidean norm of a vector are the magnitude , or
+length , of a vector. (The term length should be avoided, since it is also often used
+to refer to the dimension of the vector.) We use the same notation for the norms
+of vectors of dierent dimensions.
+As simple examples, we have
+2
+42
+ 1
+23
+5=p
+9 = 3;0
+ 1= 1:
+Whenxis a scalar, i.e., a 1-vector, the Euclidean norm is the same as the
+absolute value of x. Indeed, the Euclidean norm can be considered a generalization
+or extension of the absolute value or magnitude, that applies to vectors. The double
+bar notation is meant to suggest this. Like the absolute value of a number, the
+norm of a vector is a (numerical) measure of its magnitude. We say a vector is
+small if its norm is a small number, and we say it is large if its norm is a large
+number. (The numerical values of the norm that qualify for small or large depend
+on the particular application and context.)46 3 Norm and distance
+Properties of norm. Some important properties of the Euclidean norm are given
+below. Here xandyare vectors of the same size, and is a scalar.
+Nonnegative homogeneity. kxk=jjkxk. Multiplying a vector by a scalar
+multiplies the norm by the absolute value of the scalar.
+Triangle inequality. kx+ykkxk+kyk. The Euclidean norm of a sum of two
+vectors is no more than the sum of their norms. (The name of this property
+will be explained later.) Another name for this inequality is subadditivity .
+Nonnegativity.kxk0.
+Deniteness.kxk= 0 only if x= 0.
+The last two properties together, which state that the norm is always nonnegative,
+and zero only when the vector is zero, are called positive deniteness . The rst,
+third, and fourth properties are easy to show directly from the denition of the
+norm. As an example, let's verify the deniteness property. If kxk= 0, then
+we also havekxk2= 0, which means that x2
+1++x2
+n= 0. This is a sum of n
+nonnegative numbers, which is zero. We can conclude that each of the nnumbers is
+zero, since if any of them were nonzero the sum would be positive. So we conclude
+thatx2
+i= 0 fori= 1;:::;n , and therefore xi= 0 fori= 1;:::;n ; and thus, x= 0.
+Establishing the second property, the triangle inequality, is not as easy; we will
+give a derivation on page 57.
+General norms. Any real-valued function of an n-vector that satises the four
+properties listed above is called a (general) norm. But in this book we will only
+use the Euclidean norm, so from now on, we refer to the Euclidean norm as the
+norm. (See exercise 3.5, which describes some other useful norms.)
+Root-mean-square value. The norm is related to the root-mean-square (RMS)
+value of an n-vectorx, dened as
+rms(x) =r
+x2
+1++x2n
+n=kxkpn:
+The argument of the squareroot in the middle expression is called the mean square
+value ofx, denoted ms(x), and the RMS value is the squareroot of the mean square
+value. The RMS value of a vector xis useful when comparing norms of vectors
+with dierent dimensions; the RMS value tells us what a `typical' value of jxijis.
+For example, the norm of 1, then-vector of all ones, ispn, but its RMS value is 1,
+independent of n. More generally, if all the entries of a vector are the same, say,
+, then the RMS value of the vector is jj.
+Norm of a sum. A useful formula for the norm of the sum of two vectors xand
+yis
+kx+yk=q
+kxk2+ 2xTy+kyk2: (3.1)3.1 Norm 47
+To derive this formula, we start with the square of the norm of x+yand use various
+properties of the inner product:
+kx+yk2= (x+y)T(x+y)
+=xTx+xTy+yTx+yTy
+=kxk2+ 2xTy+kyk2:
+Taking the squareroot of both sides yields the formula (3.1) above. In the rst
+line, we use the denition of the norm. In the second line, we expand the inner
+product. In the fourth line we use the denition of the norm, and the fact that
+xTy=yTx. Some other identities relating norms, sums, and inner products of
+vectors are explored in exercise 3.4.
+Norm of block vectors. The norm-squared of a stacked vector is the sum of the
+norm-squared values of its subvectors. For example, with d= (a;b;c ) (wherea,b,
+andcare vectors), we have
+kdk2=dTd=aTa+bTb+cTc=kak2+kbk2+kck2:
+This idea is often used in reverse, to express the sum of the norm-squared values
+of some vectors as the norm-square value of a block vector formed from them.
+We can write the equality above in terms of norms as
+k(a;b;c )k=p
+kak2+kbk2+kck2=k(kak;kbk;kck)k:
+In words: The norm of a stacked vector is the norm of the vector formed from
+the norms of the subvectors. The right-hand side of the equation above should be
+carefully read. The outer norm symbols enclose a 3-vector, with (scalar) entries
+kak,kbk, andkck.
+Chebyshev inequality. Suppose that xis ann-vector, and that kof its entries
+satisfyjxija, wherea>0. Thenkof its entries satisfy x2
+ia2. It follows that
+kxk2=x2
+1++x2
+nka2;
+sincekof the numbers in the sum are at least a2, and the other n knumbers are
+nonnegative. We can conclude that kkxk2=a2, which is called the Chebyshev
+inequality , after the mathematician Pafnuty Chebyshev. When kxk2=a2n, the
+inequality tells us nothing, since we always have kn. In other cases it limits
+the number of entries in a vector that can be large. For a>kxk, the inequality is
+kkxk2=a2<1, so we conclude that k= 0 (sincekis an integer). In other words,
+no entry of a vector can be larger in magnitude than the norm of the vector.
+The Chebyshev inequality is easier to interpret in terms of the RMS value of a
+vector. We can write it as
+k
+nrms(x)
+a2
+; (3.2)
+wherekis, as above, the number of entries of xwith absolute value at least a. The
+left-hand side is the fraction of entries of the vector that are at least ain absolute48 3 Norm and distance
+ab
+Figure 3.1 The norm of the displacement b ais the distance between the
+points with coordinates aandb.
+value. The right-hand side is the inverse square of the ratio of atorms(x). It says,
+for example, that no more than 1 =25 = 4% of the entries of a vector can exceed
+its RMS value by more than a factor of 5. The Chebyshev inequality partially
+justies the idea that the RMS value of a vector gives an idea of the size of a
+typical entry: It states that not too many of the entries of a vector can be much
+bigger (in absolute value) than its RMS value. (A converse statement can also be
+made: At least one entry of a vector has absolute value as large as the RMS value
+of the vector; see exercise 3.8.)
+3.2 Distance
+Euclidean distance. We can use the norm to dene the Euclidean distance be-
+tween two vectors aandbas the norm of their dierence:
+dist(a;b) =ka bk:
+For one, two, and three dimensions, this distance is exactly the usual distance
+between points with coordinates aandb, as illustrated in gure 3.1. But the
+Euclidean distance is dened for vectors of any dimension; we can refer to the
+distance between two vectors of dimension 100. Since we only use the Euclidean
+norm in this book, we will refer to the Euclidean distance between vectors as,
+simply, the distance between the vectors. If aandbaren-vectors, we refer to the
+RMS value of the dierence, ka bk=pn, as the RMS deviation between the two
+vectors.
+When the distance between two n-vectorsxandyis small, we say they are
+`close' or `nearby', and when the distance kx ykis large, we say they are `far'.
+The particular numerical values of kx ykthat correspond to `close' or `far' depend
+on the particular application.3.2 Distance 49
+/bardbla−b/bardbl/bardblb−c/bardbl/bardbla−c/bardbl
+a bc
+Figure 3.2 Triangle inequality.
+As an example, consider the 4-vectors
+u=2
+6641:8
+2:0
+ 3:7
+4:73
+775; v =2
+6640:6
+2:1
+1:9
+ 1:43
+775; w =2
+6642:0
+1:9
+ 4:0
+4:63
+775:
+The distances between pairs of them are
+ku vk= 8:368;ku wk= 0:387;kv wk= 8:533;
+so we can say that uis much nearer (or closer) to wthan it is to v. We can also
+say thatwis much nearer to uthan it is to v.
+Triangle inequality. We can now explain where the triangle inequality gets its
+name. Consider a triangle in two or three dimensions, whose vertices have coordi-
+natesa,b, andc. The lengths of the sides are the distances between the vertices,
+dist(a;b) =ka bk; dist(b;c) =kb ck; dist(a;c) =ka ck:
+Geometric intuition tells us that the length of any side of a triangle cannot exceed
+the sum of the lengths of the other two sides. For example, we have
+ka ckka bk+kb ck: (3.3)
+This follows from the triangle inequality, since
+ka ck=k(a b) + (b c)kka bk+kb ck:
+This is illustrated in gure 3.2.50 3 Norm and distance
+z1z2z3z4
+z5z6 x
+Figure 3.3 A pointx, shown as a square, and six other points z1;:::;z 6.
+The pointz3is the nearest neighbor of xamong the points z1;:::;z 6.
+Examples.
+Feature distance. Ifxandyrepresent vectors of nfeatures of two objects,
+the quantitykx ykis called the feature distance , and gives a measure of
+how dierent the objects are (in terms of their feature values). Suppose for
+example the feature vectors are associated with patients in a hospital, with
+entries such as weight, age, presence of chest pain, diculty breathing, and
+the results of tests. We can use feature vector distance to say that one patient
+case is near another one (at least in terms of their feature vectors).
+RMS prediction error. Suppose that the n-vectoryrepresents a time series
+of some quantity, for example, hourly temperature at some location, and ^ yis
+anothern-vector that represents an estimate or prediction of the time series y,
+based on other information. The dierence y ^yis called the prediction error ,
+and its RMS value rms(y ^y) is called the RMS prediction error . If this value
+is small (say, compared to rms(y)) the prediction is good.
+Nearest neighbor. Supposez1;:::;zmis a collection of mn-vectors, and that
+xis anothern-vector. We say that zjis the nearest neighbor ofx(among
+z1;:::;zm) if
+kx zjkkx zik; i= 1;:::;m:
+In words:zjis the closest vector to xamong the vectors z1;:::;zm. This
+is illustrated in gure 3.3. The idea of nearest neighbor, and generalizations
+such as the k-nearest neighbors, are used in many applications.
+Document dissimilarity. Supposen-vectorsxandyrepresent the histograms
+of word occurrences for two documents. Then kx ykrepresents a measure
+of the dissimilarity of the two documents. We might expect the dissimilarity3.2 Distance 51
+Veterans Memorial Academy Golden Globe Super Bowl
+Day Day Awards Awards
+Veterans Day 0 0.095 0.130 0.153 0.170
+Memorial Day 0.095 0 0.122 0.147 0.164
+Academy A. 0.130 0.122 0 0.108 0.164
+Golden Globe A. 0.153 0.147 0.108 0 0.181
+Super Bowl 0.170 0.164 0.164 0.181 0
+Table 3.1 Pairwise word count histogram distances between ve Wikipedia
+articles.
+to be smaller when the two documents have the same genre, topic, or author;
+we would expect it to be larger when they are on dierent topics, or have
+dierent authors. As an example we form the word count histograms for the
+5 Wikipedia articles with titles `Veterans Day', `Memorial Day', `Academy
+Awards', `Golden Globe Awards', and `Super Bowl', using a dictionary of
+4423 words. (More detail is given in x4.4.) The pairwise distances between
+the word count histograms are shown in table 3.1. We can see that pairs of
+related articles have smaller word count histogram distances than less related
+pairs of articles.
+Units for heterogeneous vector entries. The square of the distance between two
+n-vectorsxandyis given by
+kx yk2= (x1 y1)2++ (xn yn)2;
+the sum of the squares of the dierences between their respective entries. Roughly
+speaking, the entries in the vectors all have equal status in determining the distance
+between them. For example, if x2andy2dier by one, the contribution to the
+square of the distance between them is the same as the contribution when x3and
+y3dier by one. This makes sense when the entries of the vectors xandyrepresent
+the same type of quantity, using the same units (say, at dierent times or locations),
+for example meters or dollars. For example if xandyare word count histograms,
+their entries are all word occurrence frequencies, and it makes sense to say they
+are close when their distance is small.
+When the entries of a vector represent dierent types of quantities, for example
+when the vector entries represent dierent types of features associated with an
+object, we must be careful about choosing the units used to represent the numerical
+values of the entries. If we want the dierent entries to have approximately equal
+status in determining distance, their numerical values should be approximately of
+the same magnitude. For this reason units for dierent entries in vectors are often
+chosen in such a way that their typical numerical values are similar in magnitude,
+so that the dierent entries play similar roles in determining distance.
+As an example suppose that the 2-vectors x,y, andzare the feature vectors
+for three houses that were sold, as in the example described on page 39. The rst
+entry of each vector gives the house area and the second entry gives the number of52 3 Norm and distance
+bedrooms. These are very dierent types of features, since the rst one is a physical
+area, and the second one is a count, i.e., an integer. In the example on page 39, we
+chose the unit used to represent the rst feature, area, to be thousands of square
+feet. With this choice of unit used to represent house area, the numerical values of
+both of these features range from around 1 to 5; their values have roughly the same
+magnitude. When we determine the distance between feature vectors associated
+with two houses, the dierence in the area (in thousands of square feet), and the
+dierence in the number of bedrooms, play equal roles.
+For example, consider three houses with feature vectors
+x= (1:6;2); y = (1:5;2); z = (1:6;4):
+The rst two are `close' or `similar' since kx yk= 0:1 is small (compared to the
+norms ofxandy, which are around 2 :5). This matches our intuition that the rst
+two houses are similar, since they both have two bedrooms and are close in area.
+The third house would be considered `far' or `dierent' from the rst two houses,
+and rightly so since it has four bedrooms instead of two.
+To appreciate the signicance of our choice of units in this example, suppose
+we had chosen instead to represent house area directly in square feet, and not
+thousands of square feet. The three houses above would then be represented by
+feature vectors
+~x= (1600;2);~y= (1500;2);~z= (1600;4):
+The distance between the rst and third houses is now 2, which is very small
+compared to the norms of the vectors (which are around 1600). The distance
+between the rst and second houses is much larger. It seems strange to consider
+a two-bedroom house and a four-bedroom house as `very close', while two houses
+with the same number of bedrooms and similar areas are much more dissimilar.
+The reason is simple: With our choice of square feet as the unit to measure house
+area, distances are very strongly inuenced by dierences in area, with number of
+bedrooms playing a much smaller (relative) role.
+3.3 Standard deviation
+For any vector x, the vector ~ x=x avg(x)1is called the associated de-meaned
+vector, obtained by subtracting from each entry of xthe mean value of the entries.
+(This is not standard notation; i.e., ~xis not generally used to denote the de-meaned
+vector.) The mean value of the entries of ~ xis zero, i.e.,avg(~x) = 0. This explains
+why ~xis called the de-meaned version of x; it isxwith its mean removed. The
+de-meaned vector is useful for understanding how the entries of a vector deviate
+from their mean value. It is zero if all the entries in the original vector xare the
+same.
+The standard deviation of ann-vectorxis dened as the RMS value of the
+de-meaned vector x avg(x)1,i.e.,
+std(x) =r
+(x1 avg(x))2++ (xn avg(x))2
+n:3.3 Standard deviation 53
+This is the same as the RMS deviation between a vector xand the vector all of
+whose entries are avg(x). It can be written using the inner product and norm as
+std(x) =kx (1Tx=n)1kpn: (3.4)
+The standard deviation of a vector xtells us the typical amount by which its entries
+deviate from their average value. The standard deviation of a vector is zero only
+when all its entries are equal. The standard deviation of a vector is small when the
+entries of the vector are nearly the same.
+As a simple example consider the vector x= (1; 2;3;2). Its mean or average
+value is avg(x) = 1, so the de-meaned vector is ~ x= (0; 3;2;1). Its standard
+deviation is std(x) = 1:872. We interpret this number as a `typical' value by which
+the entries dier from the mean of the entries. These numbers are 0, 3, 2, and 1,
+so 1:872 is reasonable.
+We should warn the reader that another slightly dierent denition of the stan-
+dard deviation of a vector is widely used, in which the denominatorpnin (3.4) is
+replaced withpn 1 (forn2). In this book we will only use the denition (3.4).
+In some applications the Greek letter (sigma) is traditionally used to denote
+standard deviation, while the mean is denoted (mu). In this notation we have,
+for ann-vectorx,
+=1Tx=n;  =kx 1k=pn:
+We will use the symbols avg(x) and std(x), switching to andonly with expla-
+nation, when describing an application that traditionally uses these symbols.
+Average, RMS value, and standard deviation. The average, RMS value, and
+standard deviation of a vector are related by the formula
+rms(x)2=avg(x)2+std(x)2: (3.5)
+This formula makes sense: rms(x)2is the mean square value of the entries of x,
+which can be expressed as the square of the mean value, plus the mean square
+uctuation of the entries of xaround their mean value. We can derive this formula
+from our vector notation formula for std(x) given above. We have
+std(x)2= (1=n)kx (1Tx=n)1k2
+= (1=n)(xTx 2xT(1Tx=n)1+ ((1Tx=n)1)T((1Tx=n)1))
+= (1=n)(xTx (2=n)(1Tx)2+n(1Tx=n)2)
+= (1=n)xTx (1Tx=n)2
+=rms(x)2 avg(x)2;
+which can be re-arranged to obtain the identity (3.5) above. This derivation uses
+many of the properties for norms and inner products, and should be read carefully
+to understand every step. In the second line, we expand the norm-square of the
+sum of two vectors. In the third line, we use the commutative property of scalar-
+vector multiplication, moving scalars such as ( 1Tx=n) to the front of each term,
+and also the fact that 1T1=n.54 3 Norm and distance
+Examples.
+Mean return and risk. Suppose that an n-vector represents a time series of
+return on an investment, expressed as a percentage, in ntime periods over
+some interval of time. Its average gives the mean return over the whole
+interval, often shortened to its return . Its standard deviation is a measure of
+how variable the return is, from period to period, over the time interval, i.e.,
+how much it typically varies from its mean, and is often called the (per period)
+risk of the investment. Multiple investments can be compared by plotting
+them on a risk-return plot , which gives the mean and standard deviation of
+the returns of each of the investments over some interval. A desirable return
+history vector has high mean return and low risk; this means that the returns
+in the dierent periods are consistently high. Figure 3.4 shows an example.
+Temperature or rainfall. Suppose that an n-vector is a time series of the
+daily average temperature at a particular location, over a one year period.
+Its average gives the average temperature at that location (over the year) and
+its standard deviation is a measure of how much the temperature varied from
+its average value. We would expect the average temperature to be high and
+the standard deviation to be low in a tropical location, and the opposite for
+a location with high latitude.
+Chebyshev inequality for standard deviation. The Chebyshev inequality (3.2)
+can be transcribed to an inequality expressed in terms of the mean and standard
+deviation: If kis the number of entries of xthat satisfyjxi avg(x)ja, then
+k=n(std(x)=a)2. (This inequality is only interesting for a >std(x).) For
+example, at most 1 =9 = 11:1% of the entries of a vector can deviate from the mean
+value avg(x) by 3 standard deviations or more. Another way to state this is: The
+fraction of entries of xwithinstandard deviations of avg(x) is at least 1 1=2
+(for>1).
+As an example, consider a time series of return on an investment, with a mean
+return of 8%, and a risk (standard deviation) 3%. By the Chebyshev inequality,
+the fraction of periods with a loss ( i.e.,xi0) is no more than (3 =8)2= 14:1%.
+(In fact, the fraction of periods when the return is either a loss, xi0, or very
+good,xi16%, is together no more than 14 :1%.)
+Properties of standard deviation.
+Adding a constant. For any vector xand any number a, we have std(x+a1) =
+std(x). Adding a constant to every entry of a vector does not change its
+standard deviation.
+Multiplying by a scalar. For any vector xand any number a, we have
+std(ax) =jajstd(x). Multiplying a vector by a scalar multiplies the standard
+deviation by the absolute value of the scalar.3.3 Standard deviation 55
+5 10−50510
+kak
+5 10−50510
+kbk
+5 10−50510
+kck
+5 10−50510
+kdk
+0 2 40123
+abc
+d
+riskreturn
+Figure 3.4 The vectors a,b,c,drepresent time series of returns on in-
+vestments over 10 periods. The bottom plot shows the investments in a
+risk-return plane, with return dened as the average value and risk as the
+standard deviation of the corresponding vector.56 3 Norm and distance
+2 4 6 810−404
+kxk
+2 4 6 810−404
+k˜xk
+2 4 6 810−404
+kzk
+Figure 3.5 A 10-vector x, the de-meaned vector ~ x=x avg(x)1, and the
+standardized vector z= (1=std(x))~x. The horizontal dashed lines indicate
+the mean and the standard deviation of each vector. The middle line is
+the mean; the distance between the middle line and the other two is the
+standard deviation.
+Standardization. For any vector x, we refer to ~ x=x avg(x)1as the de-meaned
+version ofx, since it has average or mean value zero. If we then divide by the RMS
+value of ~x(which is the standard deviation of x), we obtain the vector
+z=1
+std(x)(x avg(x)1):
+This vector is called the standardized version ofx. It has mean zero, and standard
+deviation one. Its entries are sometimes called the z-scores associated with the
+original entries of x. For example, z4= 1:4 means that x4is 1.4 standard deviations
+above the mean of the entries of x. Figure 3.5 shows an example.
+The standardized values for a vector give a simple way to interpret the original
+values in the vectors. For example, if an n-vectorxgives the values of some
+medical test of npatients admitted to a hospital, the standardized values or z-
+scores tell us how high or low, compared to the population, that patient's value is.
+A valuez6= 3:2, for example, means that patient 6 has a very low value of the
+measurement; whereas z22= 0:3 says that patient 22's value is quite close to the
+average value.
+3.4 Angle
+Cauchy{Schwarz inequality. An important inequality that relates norms and in-
+ner products is the Cauchy{Schwarz inequality :
+jaTbjkakkbk
+for anyn-vectorsaandb. Written out in terms of the entries, this is
+ja1b1++anbnj 
+a2
+1++a2
+n1=2 
+b2
+1++b2
+n1=2;3.4 Angle 57
+which looks more intimidating. This inequality is attributed to the mathematician
+Augustin-Louis Cauchy; Hermann Schwarz gave the derivation given below.
+The Cauchy{Schwarz inequality can be shown as follows. The inequality clearly
+holds ifa= 0 orb= 0 (in this case, both sides of the inequality are zero). So we
+suppose now that a6= 0,b6= 0, and dene =kak,=kbk. We observe that
+0 ka bk2
+=kak2 2(a)T(b) +kbk2
+=2kak2 2(aTb) +2kbk2
+=kbk2kak2 2kbkkak(aTb) +kak2kbk2
+= 2kak2kbk2 2kakkbk(aTb):
+Dividing by 2kakkbkyieldsaTbkakkbk. Applying this inequality to  aand
+bwe obtain aTbkakkbk. Putting these two inequalities together we get the
+Cauchy{Schwarz inequality, jaTbjkakkbk.
+This argument also reveals the conditions on aandbunder which they satisfy
+the Cauchy{Schwarz inequality with equality. This occurs only if ka bk= 0,
+i.e.,a=b. This means that each vector is a scalar multiple of the other (in
+the case when they are nonzero). This statement remains true when either aor
+bis zero. So the Cauchy{Schwarz inequality holds with equality when one of the
+vectors is a multiple of the other; in all other cases, it holds with strict inequality.
+Verication of triangle inequality. We can use the Cauchy{Schwarz inequality to
+verify the triangle inequality. Let aandbbe any vectors. Then
+ka+bk2=kak2+ 2aTb+kbk2
+ kak2+ 2kakkbk+kbk2
+= (kak+kbk)2;
+where we used the Cauchy{Schwarz inequality in the second line. Taking the
+squareroot we get the triangle inequality, ka+bkkak+kbk.
+Angle between vectors. The angle between two nonzero vectors a,bis dened
+as
+= arccosaTb
+kakkbk
+where arccos denotes the inverse cosine, normalized to lie in the interval [0 ;]. In
+other words, we dene as the unique number between 0 and that satises
+aTb=kakkbkcos:
+The angle between aandbis written as 6(a;b), and is sometimes expressed in
+degrees. (The default angle unit is radians ; 360is 2radians.) For example,
+6(a;b) = 60means6(a;b) ==3,i.e.,aTb= (1=2)kakkbk.
+The angle coincides with the usual notion of angle between vectors, when they
+have dimension two or three, and they are thought of as displacements from a58 3 Norm and distance
+common point. For example, the angle between the vectors a= (1;2; 1) and
+b= (2;0; 3) is
+arccos5p
+6p
+13
+= arccos(0:5661) = 0:9690 = 55:52
+(to 4 digits). But the denition of angle is more general; we can refer to the angle
+between two vectors with dimension 100.
+The angle is a symmetric function of aandb: We have6(a;b) =6(b;a). The
+angle is not aected by scaling each of the vectors by a positive scalar: We have,
+for any vectors aandb, and any positive numbers and,
+6(a;b ) =6(a;b):
+Acute and obtuse angles. Angles are classied according to the sign of aTb.
+Supposeaandbare nonzero vectors of the same size.
+If the angle is =2 = 90,i.e.,aTb= 0, the vectors are said to be orthogonal .
+We writea?bifaandbare orthogonal. (By convention, we also say that a
+zero vector is orthogonal to any vector.)
+If the angle is zero, which means aTb=kakkbk, the vectors are aligned . Each
+vector is a positive multiple of the other.
+If the angle is = 180, which means aTb= kakkbk, the vectors are anti-
+aligned . Each vector is a negative multiple of the other.
+If6(a;b)<= 2 = 90, the vectors are said to make an acute angle . This is
+the same as aTb>0,i.e., the vectors have positive inner product.
+If6(a;b)>= 2 = 90, the vectors are said to make an obtuse angle . This is
+the same as aTb<0,i.e., the vectors have negative inner product.
+These denitions are illustrated in gure 3.6.
+Examples.
+Spherical distance. Supposeaandbare 3-vectors that represent two points
+that lie on a sphere of radius R(for example, locations on earth). The
+spherical distance between them, measured along the sphere, is given by
+R6(a;b). This is illustrated in gure 3.7.
+Document similarity via angles. Ifn-vectorsxandyrepresent the word
+counts for two documents, their angle 6(x;y) can be used as a measure of
+document dissimilarity. (When using angle to measure document dissimilar-
+ity, either word counts or histograms can be used; they produce the same
+result.) As an example, table 3.2 gives the angles in degrees between the
+word histograms in the example at the end of x3.2.

@@ -1,8 +1,10 @@
-from flask import Blueprint, jsonify, request
+from flask import Blueprint, json, jsonify, request
 from flask_cors import cross_origin
 import os
+import tree_gen_final
 
 main = Blueprint('main', __name__)
+
 
 @main.route('/api/chat', methods=['POST'])
 @cross_origin()
@@ -24,9 +26,9 @@ def get_page():
     content = "Here is an equation: $E=mc^2$ in inline mode.\nAnd here it is displayed:\n$$E=mc^2$$"
 
     if page_type == "summary":
-        print("Yello")
+        pass
     elif page_type == "activity":
-        print("Bello")
+        pass
     elif page_type == "quiz":
         pass
     else:
@@ -78,6 +80,7 @@ def get_quiz():
 
 @main.route('/api/submit_quiz', methods=['POST'])
 def submit_quiz():
+    print("Hello")
     data = request.json
     user_responses = data.get('responses')
     feedback = []
@@ -121,9 +124,37 @@ def upload_pdf():
         return jsonify({'error': 'No selected file'}), 400
 
     if file and file.filename.endswith('.pdf'):
-        filepath = os.path.join(main.config['UPLOAD_FOLDER'], file.filename)
+        filepath = os.path.join('uploads/textbook.pdf')
         file.save(filepath)
         return jsonify({'message': 'File uploaded successfully!'}), 200
     else:
         return jsonify({'error': 'File is not a PDF'}), 400
+
+JSON_FILE_PATH = 'hierarchy_structure.json'
+
+@main.route('/api/get_json', methods=['GET'])
+def get_json():
+    # Ensure the file exists
+    print("Hello")
+    if not os.path.exists(JSON_FILE_PATH):
+        return jsonify({'error': 'File not found'}), 404
+
+    # Read the JSON file and return its contents
+    try:
+        with open(JSON_FILE_PATH, 'r') as f:
+            json_data = json.load(f)
+        return jsonify(json_data), 200
+    except Exception as e:
+        return jsonify({'error': f'Error reading file: {str(e)}'}), 500
     
+@main.route('/api/process_pdf', methods=['POST'])
+def process_pdf():
+    # Simulate PDF processing or call your actual logic here
+    # For example: process the uploaded PDF
+    # You can perform some actual PDF processing logic here and return a response when done.
+    print("Processing PDF...")
+
+    # Simulating a long-running task
+    tree_gen_final.main(filepath="uploads/textbook.pdf")
+
+    return jsonify({"message": "Processing completed", "next_page": "/chapter/1/section/1"})

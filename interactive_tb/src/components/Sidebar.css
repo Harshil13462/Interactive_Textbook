@@ -23,3 +23,32 @@
     background-color: #0056b3;
   }
   
+  /* Sidebar.css */
+.home-button {
+    display: block;
+    width: 100%;
+    padding: 10px;
+    font-size: 16px;
+    font-weight: bold;
+    background-color: #007bff;
+    color: white;
+    border: none;
+    cursor: pointer;
+    margin-bottom: 20px;
+    text-align: center;
+    transition: background-color 0.3s;
+  }
+  
+  .home-button:hover {
+    background-color: #0056b3;
+  }
+  
+  .sidebar ul {
+    list-style-type: none;
+    padding: 0;
+  }
+  
+  .sidebar li {
+    margin: 10px 0;
+  }
+  

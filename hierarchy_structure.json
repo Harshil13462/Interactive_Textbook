@@ -1,0 +1,95 @@
+{
+  "Contents": [
+    {
+      "title": "Preface",
+      "page": "xi"
+    },
+    {
+      "title": "Part I: Vectors",
+      "chapters": [
+        {
+          "title": "Chapter 1: Vectors",
+          "page": "3",
+          "sections": [
+            {
+              "title": "1.1 Vectors",
+              "page": "3"
+            },
+            {
+              "title": "1.2 Vector addition",
+              "page": "11"
+            },
+            {
+              "title": "1.3 Scalar-vector multiplication",
+              "page": "15"
+            },
+            {
+              "title": "1.4 Inner product",
+              "page": "19"
+            },
+            {
+              "title": "1.5 Complexity of vector computations",
+              "page": "22"
+            },
+            {
+              "title": "Exercises",
+              "page": "25"
+            }
+          ]
+        },
+        {
+          "title": "Chapter 2: Linear functions",
+          "page": "29",
+          "sections": [
+            {
+              "title": "2.1 Linear functions",
+              "page": "29"
+            },
+            {
+              "title": "2.2 Taylor approximation",
+              "page": "35"
+            },
+            {
+              "title": "2.3 Regression model",
+              "page": "38"
+            },
+            {
+              "title": "Exercises",
+              "page": "42"
+            }
+          ]
+        },
+        {
+          "title": "Chapter 3: Norm and distance",
+          "page": "45",
+          "sections": [
+            {
+              "title": "3.1 Norm",
+              "page": "45"
+            },
+            {
+              "title": "3.2 Distance",
+              "page": "48"
+            },
+            {
+              "title": "3.3 Standard deviation",
+              "page": "52"
+            },
+            {
+              "title": "3.4 Angle",
+              "page": "56"
+            },
+            {
+              "title": "3.5 Complexity",
+              "page": "63"
+            },
+            {
+              "title": "Exercises",
+              "page": "64"
+            }
+          ]
+        }
+      ]
+    }
+  ]
+}
