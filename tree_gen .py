@@ -1,11 +1,12 @@
-import openai
+from openai import OpenAI
+
+client = OpenAI(api_key=my_sk)
 from const import *
 # from extract_struct import *
 import PyPDF2 as pdf
 from TBNode import TBNode
 import json
 
-openai.api_key = my_sk
 
 def extract_text_from_pdf(pdf_path):
     with open(pdf_path, 'rb') as file:
@@ -16,17 +17,15 @@ def extract_text_from_pdf(pdf_path):
     return text
 
 def request(prompt):
-    response = openai.ChatCompletion.create(
-        model="gpt-4o",  # You can also use "gpt-4" if available
-        messages=[
-            {"role": "system", "content": "You are a helpful assistant."}, # this will change with time according to chat history
-            {"role": "user", "content": prompt}
-        ],
-        max_tokens=1500,
-        temperature=0.5
-    )
+    response = client.chat.completions.create(model="gpt-4o",  # You can also use "gpt-4" if available
+    messages=[
+        {"role": "system", "content": "You are a helpful assistant."}, # this will change with time according to chat history
+        {"role": "user", "content": prompt}
+    ],
+    max_tokens=1500,
+    temperature=0.5)
 
-    return response['choices'][0]['message']['content'].strip()
+    return response.choices[0].message.content.strip()
 
 def prompt_for_sectiontext(section, text):
     return """Print only the text for {} from the following text:
@@ -62,12 +61,12 @@ def parse_json_to_tree(data, parent_text):
 def build_tree_from_json(json_data, text):
     root = TBNode('root', None)
     contents = json_data['Contents'] if 'Contents' in json_data else []
-    
+
     for item in contents:
         # Parsing the top-level items like parts or chapters
         part_node = parse_json_to_tree(item, text)
         root.add_child(part_node)
-    
+
     return root
 
 def print_tree(node, level=0):
@@ -88,7 +87,7 @@ if __name__ == "__main__":
     with open('hierarchy_structure.json', 'r') as f:
         data = json.loads(json.load(f))
         print(type(data))
-    
+
     tb = build_tree_from_json(data, text[:len(text)//3])
-    
+
     print_tree(tb)

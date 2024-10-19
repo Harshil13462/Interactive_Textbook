@@ -1,4 +1,6 @@
-import openai
+from openai import OpenAI
+
+client = OpenAI()
 from const import *
 sk = my_sk
 import fitz
@@ -20,20 +22,18 @@ def extract_text_from_pdf(pdf_path):
 # Function to get hierarchical structure using GPT-4
 def get_hierarchy_structure(pdf_path):
     extracted_text = extract_text_from_pdf(pdf_path)
-    
+
     prompt = f"Given the following textbook content, extract the structure of sections and subsections, providing a hierarchical representation as a JSON format (do not include '\n' anywhere). Textbook content: {extracted_text[:len(extracted_text)//10]}"
 
     # Call the OpenAI API (new version)
-    response = openai.ChatCompletion.create(
-        model="gpt-4o",
-        messages=[
-            {"role": "system", "content": "You are a helpful assistant."},
-            {"role": "user", "content": prompt}
-        ],
-        response_format={
-        "type": "json_object",
-        }
-    )
+    response = client.chat.completions.create(model="gpt-4o",
+    messages=[
+        {"role": "system", "content": "You are a helpful assistant."},
+        {"role": "user", "content": prompt}
+    ],
+    response_format={
+"type": "json_object",
+    })
 
     # Extract the hierarchical JSON response
     structured_data = response.choices[0].message.content

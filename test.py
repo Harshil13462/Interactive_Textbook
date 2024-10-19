@@ -1,10 +1,11 @@
-import openai
+from openai import OpenAI
+
+client = OpenAI(api_key=my_sk)
 from const import *
 import PyPDF2 as pdf
 from TBNode import TBNode
 import json
 
-openai.api_key = my_sk
 pstart, pend = 13, 15
 section = "topic 1"
 
@@ -37,17 +38,15 @@ def extract_text_from_pdf(pdf_path):
     return text
 
 def request(prompt):
-    response = openai.ChatCompletion.create(
-        model="gpt-4o",  # You can also use "gpt-4" if available
-        messages=[
-            {"role": "system", "content": "You are a helpful assistant."}, # this will change with time according to chat history
-            {"role": "user", "content": prompt}
-        ],
-        max_tokens=1500,
-        temperature=0.5
-    )
+    response = client.chat.completions.create(model="gpt-4o",  # You can also use "gpt-4" if available
+    messages=[
+        {"role": "system", "content": "You are a helpful assistant."}, # this will change with time according to chat history
+        {"role": "user", "content": prompt}
+    ],
+    max_tokens=1500,
+    temperature=0.5)
 
-    return response['choices'][0]['message']['content'].strip()
+    return response.choices[0].message.content.strip()
 
 def to_string(root):
     if len(root.children) == 0: return root.content
@@ -88,12 +87,12 @@ def parse_json_to_tree(data, parent_text):
 def build_tree_from_json(json_data):
     root = TBNode('root', None)
     contents = json_data['Contents'] if 'Contents' in json_data else []
-    
+
     for item in contents:
         # Parsing the top-level items like parts or chapters
         part_node = parse_json_to_tree(item, "parent text placeholder")
         root.add_child(part_node)
-    
+
     return root
 
 def print_tree(node, level=0):
@@ -107,11 +106,10 @@ if __name__ == "__main__":
     t = extract_text_from_pdf("reduced_files/cut.pdf")
 
     # # Extract only text from topic
-    
+
     with open('hierarchy_structure.json', 'r') as f:
         data = json.loads(json.load(f))
         print(type(data))
-    
+
     tb = build_tree_from_json(data)
-    
-    
+
