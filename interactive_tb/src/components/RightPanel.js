@@ -1,26 +1,45 @@
 import React, { useState } from 'react';
 
 const RightPanel = () => {
-  const [chatInput, setChatInput] = useState(""); // For storing input value
-  const [chatHistory, setChatHistory] = useState([]); // For storing chat history
+  const [chatInput, setChatInput] = useState("");  // Input value from user
+  const [chatHistory, setChatHistory] = useState([]);  // Chat history
 
-  // Handle submitting a new chat message
-  const handleChatSubmit = (e) => {
+  // Handle chat submit
+  const handleChatSubmit = async (e) => {
     e.preventDefault();
-    if (!chatInput.trim()) return; // Don't submit empty input
 
-    // Placeholder response (for now) until backend is integrated
-    const response = "This is a placeholder response. The backend will be integrated soon.";
+    // Prevent submission if input is empty
+    if (!chatInput.trim()) return;
 
-    // Update chat history
-    setChatHistory([
-      ...chatHistory,
-      { type: "user", message: chatInput },
-      { type: "bot", message: response }
-    ]);
+    // Add user's message to the chat history
+    setChatHistory([...chatHistory, { type: 'user', message: chatInput }]);
+
+    try {
+      // Make POST request to Flask backend
+      const response = await fetch('http://localhost:5000/api/chat', {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify({ message: chatInput }),
+      });
+
+      if (!response.ok) {
+        throw new Error('Error in API call');
+      }
+
+      // Parse JSON response
+      const data = await response.json();
+
+      // Add bot's response to the chat history
+      setChatHistory([...chatHistory, { type: 'user', message: chatInput }, { type: 'bot', message: data.message }]);
+
+    } catch (error) {
+      console.error('Error fetching chat response:', error);
+    }
 
     // Clear input field
-    setChatInput("");
+    setChatInput('');
   };
 
   return (

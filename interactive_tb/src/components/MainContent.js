@@ -1,27 +1,35 @@
-import React from 'react';
+import React, { useEffect, useState } from 'react';
 
-const MainContent = ({ topic, currentPage, onNext, onPrev, isFirstPage, isLastPage }) => {
+const MainContent = ({ chapter, pageType }) => {
+  const [content, setContent] = useState("");
+
+  useEffect(() => {
+    const fetchContent = async () => {
+      try {
+        // Check that chapter and pageType are valid before making the request
+        if (!chapter || !pageType) {
+          console.error('Invalid chapter or page type');
+          return;
+        }
+
+        const response = await fetch(`http://localhost:5000/api/page?chapter=${chapter}&type=${pageType}`);
+        if (!response.ok) {
+          throw new Error('Network response was not ok');
+        }
+        const data = await response.json();
+        setContent(data.content);
+      } catch (error) {
+        console.error('Error fetching page content:', error);
+      }
+    };
+
+    fetchContent();
+  }, [chapter, pageType]);  // Make sure to re-fetch if chapter or pageType changes
+
   return (
     <div className="main-content">
-      {/* Display the current topic (chapter) at the top */}
-      <h2>{topic}</h2>
-
-      {/* Main content changes depending on currentPage */}
-      <div className="content-body">
-        {currentPage === 'summary' && <p>Summary for {topic}</p>}
-        {currentPage === 'activity' && <p>Activity for {topic}</p>}
-        {currentPage === 'quiz' && <p>Quiz for {topic}</p>}
-      </div>
-
-      {/* Navigation Buttons (inside Main Content) */}
-      <div className="navigation">
-        <button onClick={onPrev} disabled={isFirstPage} className="nav-btn">
-          ←
-        </button>
-        <button onClick={onNext} disabled={isLastPage} className="nav-btn">
-          →
-        </button>
-      </div>
+      <h2>{chapter}</h2>
+      <p>{content}</p>
     </div>
   );
 };
