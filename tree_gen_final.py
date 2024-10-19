@@ -1,6 +1,5 @@
 import openai
-from const import *
-# from extract_struct import *
+from extract_struct import *
 import PyPDF2 as pdf
 from TBNode import TBNode
 import json
@@ -70,6 +69,11 @@ def build_tree_from_json(json_data, text):
     
     return root
 
+def generate_lessons(tbn):
+    if len(tbn.children) == 0: tbn.content = request('Generate a lesson on {tbn.title} from the following text as subject material: {tbh.content}')
+    else:
+        for b in tbn.children: generate_lessons(b)
+
 def print_tree(node, level=0):
     print("  " * level + f"Node: {node.name}, Content: {node.content}")
     for child in node.children:
@@ -82,7 +86,7 @@ def main(filepath):
         f.write(text)
 
     # Extract JSON hierarchy
-    # get_hierarchy_structure('uploaded_files/vmls.pdf')
+    get_hierarchy_structure('uploaded_files/vmls.pdf').replace('\n', '')
 
     # Generate tree
     with open('hierarchy_structure.json', 'r') as f:
@@ -90,6 +94,7 @@ def main(filepath):
         print(type(data))
     
     tb = build_tree_from_json(data, text)
+    generate_lessons(tb)
     
     tree_as_dict = tb.to_dict()
 

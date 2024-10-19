@@ -1,8 +1,6 @@
 from openai import OpenAI
 
 client = OpenAI()
-from const import *
-sk = my_sk
 import fitz
 import json
 
