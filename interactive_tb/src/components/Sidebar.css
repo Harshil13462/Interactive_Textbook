@@ -1,0 +1,25 @@
+.sidebar .file-upload {
+    margin-top: 20px;
+  }
+  
+  .sidebar .file-upload h4 {
+    margin-bottom: 10px;
+  }
+  
+  .sidebar .file-upload input {
+    margin-bottom: 10px;
+  }
+  
+  .sidebar .file-upload button {
+    background-color: #007bff;
+    color: white;
+    padding: 8px 12px;
+    border: none;
+    border-radius: 5px;
+    cursor: pointer;
+  }
+  
+  .sidebar .file-upload button:hover {
+    background-color: #0056b3;
+  }
+  

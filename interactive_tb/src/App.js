@@ -5,40 +5,44 @@ import RightPanel from './components/RightPanel';
 import './App.css';
 
 const App = () => {
-  const [currentPage, setCurrentPage] = useState('summary'); // 'summary', 'activity', 'quiz'
-  const [currentTopic, setCurrentTopic] = useState(0); // Topic index
+  const [currentPage, setCurrentPage] = useState('summary');
+  const [currentTopic, setCurrentTopic] = useState(0);
 
-  const chapters = ["Chapter 1", "Chapter 2", "Chapter 3"]; // Example chapters
+  const chapters = ["Chapter 1", "Chapter 2", "Chapter 3", "Chapter 3", "Chapter 3"];
 
-  const isFirstPage = currentPage === 'summary';
-  const isLastPage = currentPage === 'quiz';
+  const pageOrder = ['summary', 'activity', 'quiz'];
+  const currentPageIndex = pageOrder.indexOf(currentPage);
+  const isFirstPage = currentPageIndex === 0;
+  const isLastPage = currentPageIndex === pageOrder.length - 1;
 
   const handleNext = () => {
-    if (currentPage === 'summary') setCurrentPage('activity');
-    else if (currentPage === 'activity') setCurrentPage('quiz');
+    if (!isLastPage) {
+      setCurrentPage(pageOrder[currentPageIndex + 1]);
+    }
   };
 
   const handlePrev = () => {
-    if (currentPage === 'activity') setCurrentPage('summary');
-    else if (currentPage === 'quiz') setCurrentPage('activity');
+    if (!isFirstPage) {
+      setCurrentPage(pageOrder[currentPageIndex - 1]);
+    }
   };
 
   return (
     <div className="app">
-      <Sidebar 
-        chapters={chapters} 
+      <Sidebar
+        chapters={chapters}
         currentPage={currentPage}
-        setCurrentPage={setCurrentPage} 
-        currentTopic={currentTopic} 
-        setCurrentTopic={setCurrentTopic} 
+        setCurrentPage={setCurrentPage}
+        currentTopic={currentTopic}
+        setCurrentTopic={setCurrentTopic}
       />
-      <MainContent 
-        topic={chapters[currentTopic]} 
-        currentPage={currentPage}
-        onNext={handleNext} 
-        onPrev={handlePrev} 
-        isFirstPage={isFirstPage} 
-        isLastPage={isLastPage} 
+      <MainContent
+        chapter={chapters[currentTopic]}
+        pageType={currentPage}
+        onNext={handleNext}
+        onPrev={handlePrev}
+        isFirstPage={isFirstPage}
+        isLastPage={isLastPage}
       />
       <RightPanel />
     </div>

@@ -1,3 +1,5 @@
+@import "~katex/dist/katex.min.css";
+
 /* General layout for the app */
 .app {
   display: flex;
@@ -152,4 +154,79 @@
 button:disabled {
   background-color: #ccc;
   cursor: not-allowed;
+}
+
+.submit-button {
+  background-color: #007bff; /* Blue background */
+  color: white;
+  padding: 10px 20px;
+  border: none;
+  border-radius: 20px;
+  font-size: 16px;
+  cursor: pointer;
+  transition: background-color 0.3s ease;
+}
+
+.submit-button:hover {
+  background-color: #0056b3; /* Darker blue on hover */
+}
+
+.submit-button:disabled {
+  background-color: #ccc;
+  cursor: not-allowed;
+}
+
+
+/* Ensure the body takes full height */
+html, body {
+  height: 100%;
+  margin: 0;
+  padding: 0;
+  display: flex;
+  flex-direction: column;
+}
+
+.app {
+  display: flex;
+  height: 100vh; /* Full viewport height */
+  overflow: hidden; /* Prevent the entire page from scrolling as a whole */
+}
+
+/* Sidebar with separate scrolling */
+.sidebar {
+  width: 20%;
+  background-color: #f4f4f4;
+  padding: 10px;
+  box-shadow: 2px 0 5px rgba(0, 0, 0, 0.1);
+  height: 100vh; /* Full height */
+  box-sizing: border-box;
+  overflow-y: auto; /* Enable scrolling */
+}
+
+/* Main content with separate scrolling */
+.main-content {
+  width: 60%;
+  padding: 20px;
+  display: flex;
+  flex-direction: column;
+  justify-content: space-between;
+  background-color: #ffffff;
+  border: 1px solid #ddd;
+  height: 100vh; /* Full height for main content */
+  box-sizing: border-box;
+  overflow-y: auto; /* Enable scrolling */
+}
+
+/* Right panel with separate scrolling */
+.right-panel {
+  width: 20%;
+  background-color: #f4f4f4;
+  padding: 10px;
+  display: flex;
+  flex-direction: column;
+  justify-content: space-between;
+  border-left: 1px solid #ddd;
+  height: 100vh; /* Full height of the viewport */
+  box-sizing: border-box;
+  overflow-y: auto; /* Enable scrolling */
 }

@@ -1,0 +1,90 @@
+.navigation {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-top: 20px;
+  }
+  
+  .nav-button {
+    background-color: #fff;
+    border: 2px solid #007bff;
+    border-radius: 30px;
+    color: #007bff;
+    font-size: 16px;
+    padding: 8px 16px;
+    cursor: pointer;
+    display: flex;
+    align-items: center;
+    transition: all 0.3s ease;
+  }
+  
+  .nav-button span {
+    margin: 0 8px;
+  }
+  
+  .nav-button:hover {
+    background-color: #007bff;
+    color: #fff;
+  }
+  
+  .nav-button:disabled {
+    opacity: 0.5;
+    cursor: not-allowed;
+  }
+  
+  .nav-button.prev-button {
+    flex-direction: row;
+  }
+  
+  .nav-button.next-button {
+    flex-direction: row-reverse;
+  }
+  
+  .nav-button svg {
+    transition: transform 0.3s ease;
+  }
+  
+  .nav-button:hover svg {
+    transform: scale(1.1);
+  }
+  
+  .nav-button {
+    position: relative;
+    overflow: hidden;
+  }
+  
+  .nav-button::before {
+    content: '';
+    position: absolute;
+    width: 0%;
+    height: 100%;
+    top: 0;
+    left: 0;
+    background-color: rgba(0, 123, 255, 0.1);
+    transition: width 0.3s ease;
+    z-index: -1;
+  }
+  
+  .nav-button:hover::before {
+    width: 100%;
+  }
+  
+  .nav-button:hover svg {
+    transform: scale(1.15);
+  }
+  
+  .nav-button:hover span {
+    color: inherit;
+  }
+
+  @media (max-width: 600px) {
+    .nav-button {
+      padding: 6px 12px;
+      font-size: 14px;
+    }
+  
+    .nav-button span {
+      display: none; /* Hide text on smaller screens */
+    }
+  }
+  
