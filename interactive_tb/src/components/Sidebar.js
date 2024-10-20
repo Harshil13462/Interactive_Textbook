@@ -59,11 +59,6 @@ const Sidebar = ({ setCurrentTopic, setCurrentPage, currentTopic, currentPage })
 
   return (
     <div className="sidebar">
-      {/* Home Button */}
-      <button className="home-button" onClick={() => navigate('/')}>
-        Go to Home
-      </button>
-
       {/* Error handling */}
       {error && <p style={{ color: 'red' }}>{error}</p>}
 
@@ -106,6 +101,11 @@ const Sidebar = ({ setCurrentTopic, setCurrentPage, currentTopic, currentPage })
           ))}
         </ul>
       )}
+
+      {/* Home Button */}
+      <button className="home-button" onClick={() => navigate('/')}>
+        Upload New Textbook
+      </button>
     </div>
   );
 };

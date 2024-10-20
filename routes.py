@@ -17,23 +17,51 @@ def chat():
 @main.route('/api/page', methods=['GET'])
 @cross_origin()
 def get_page():
-    chapter = request.args.get('chapter')
-    page_type = request.args.get('type')
+    try:
+        # Get the chapter and section numbers as integers from the query parameters
+        chapter_num = request.args.get('chapter')
+        section_num = request.args.get('section')
 
-    if not chapter or not page_type:
-        return jsonify({"error": "Missing chapter or page type"}), 400
-    
-    content = "Here is an equation: $E=mc^2$ in inline mode.\nAnd here it is displayed:\n$$E=mc^2$$"
+        if chapter_num is None or section_num is None:
+            return jsonify({"error": "Missing chapter or section number"}), 400
 
-    if page_type == "summary":
-        pass
-    elif page_type == "activity":
-        pass
-    elif page_type == "quiz":
-        pass
-    else:
-        print("Oh no!")
-    return jsonify({"content": content})
+        # Convert the chapter and section numbers to integers for indexing
+        try:
+            chapter_index = int(chapter_num)  # Convert to 0-based index
+            section_index = int(section_num)  # Convert to 0-based index
+        except ValueError:
+            return jsonify({"error": "Invalid chapter or section number"}), 400
+
+        # Load the content tree (actual content)
+        try:
+            with open("tree_structure.json", "r") as f:
+                content_tree = json.load(f)
+        except FileNotFoundError:
+            return jsonify({"error": "tree_structure.json file not found"}), 500
+        except json.JSONDecodeError:
+            return jsonify({"error": "Error decoding JSON file"}), 500
+
+        # Debug: Print the tree structure
+        # print("Loaded tree structure:", content_tree)
+
+        # Ensure we have valid chapter and section indices
+
+        for chapter_content in content_tree["children"][1]["children"]:
+            print(chapter_content)
+            if f"Chapter {chapter_index}" in chapter_content["name"]:
+                for section_content in chapter_content["children"]:
+                    if f"{chapter_index}.{section_index}" in section_content["name"]:
+                        content = section_content.get("content", "No content available")
+
+        # Debug: Print the retrieved content
+        print(f"Returning content: {content}")
+
+        return jsonify({"content": content})
+
+    except Exception as e:
+        return jsonify({"error": str(e)}), 500
+
+
 
 @main.route('/api/quiz', methods=['GET'])
 def get_quiz():
@@ -80,7 +108,7 @@ def get_quiz():
 
 @main.route('/api/submit_quiz', methods=['POST'])
 def submit_quiz():
-    print("Hello")
+
     data = request.json
     user_responses = data.get('responses')
     feedback = []
@@ -142,7 +170,6 @@ def get_json():
     try:
         with open(JSON_FILE_PATH, 'r') as f:
             json_data = json.load(f)
-        print(dict(json_data))
         return jsonify(json_data), 200
     except Exception as e:
         return jsonify({'error': f'Error reading file: {str(e)}'}), 500
@@ -158,35 +185,3 @@ def process_pdf():
     tree_gen_final.main(filepath="uploads/textbook.pdf")
 
     return jsonify({"message": "Processing completed", "next_page": "/chapter/1/section/1"})
-
-@main.route('/api/summary', methods=['GET'])
-def get_summary():
-    chapter = request.args.get('chapter')
-    section = request.args.get('section')
-
-    if not chapter or not section:
-        return jsonify({"error": "Invalid chapter or section ID"}), 400
-
-    tree_data = json.load("tree_structure.json")
-
-    # Fetch the summary from the mock tree data
-    chapter_data = tree_data.get(f'Chapter {chapter}')
-    if not chapter_data:
-        return jsonify({"error": "Chapter not found"}), 404
-
-    section_summary = chapter_data.get(f'Section {section}')
-    if not section_summary:
-        return jsonify({"error": "Section not found"}), 404
-
-    return jsonify({"summary": section_summary})
-
-def get_indexes(chapter, section):
-    if not os.path.exists(JSON_FILE_PATH):
-        return jsonify({'error': 'File not found'}), 404
-
-    try:
-        with open(JSON_FILE_PATH, 'r') as f:
-            json_data = json.load(f)
-        return jsonify(json_data), 200
-    except Exception as e:
-        return jsonify({'error': f'Error reading file: {str(e)}'}), 500

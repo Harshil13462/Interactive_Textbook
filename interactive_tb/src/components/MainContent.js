@@ -5,101 +5,94 @@ import 'katex/dist/katex.min.css';
 import Navigation from './Navigation';
 import Quiz from './Quiz';
 
+const renderContent = (content) => {
+  // Step 1: Split the content by LaTeX delimiters, headings, and markdown syntax
+  const parts = content.split(/(\\\(.+?\\\)|\\\[.+?\\\]|#.*|(\*\*.*?\*\*)|(\*.*?\*))/g);
+
+  return parts.map((part, index) => {
+    if (!part) return null; // Skip empty parts
+    
+    if (part.startsWith("\\(") && part.endsWith("\\)")) {
+      // Inline LaTeX: \( ... \)
+      const math = part.slice(2, -2); // Remove \( and \)
+      return <InlineMath key={index} math={math} />;
+    } else if (part.startsWith("\\[") && part.endsWith("\\]")) {
+      // Block LaTeX: \[ ... \]
+      const math = part.slice(2, -2); // Remove \[ and \]
+      return <BlockMath key={index} math={math} />;
+    } else if (part.startsWith("#")) {
+      // Handle hashtags for headings
+      const level = part.match(/#/g).length; // Count the number of '#'
+      const headingText = part.replace(/#/g, '').trim(); // Remove the hashtags and trim
+      return React.createElement(`h${Math.min(level, 6)}`, { key: index }, headingText);
+    } else if (part.startsWith("**") && part.endsWith("**")) {
+      // Bold text (with **)
+      const boldText = part.slice(2, -2);
+      return <strong key={index}>{boldText}</strong>;
+    } else if (part.startsWith("*") && part.endsWith("*")) {
+      // Italic text (with *)
+      const italicText = part.slice(1, -1);
+      return <em key={index}>{italicText}</em>;
+    } else {
+      // Regular text
+      return <span key={index}>{part}</span>;
+    }
+  });
+};
+
+
+
 const MainContent = ({ onNext, onPrev, isFirstPage, isLastPage }) => {
-  const { chapterId, sectionId } = useParams();  // Get chapterId and sectionId from the URL
+  const { chapterId, sectionId } = useParams(); // Get chapterId and sectionId from the URL
   const [content, setContent] = useState('');
   const [questions, setQuestions] = useState([]);
-  const [treeData, setTreeData] = useState(null); // Store tree structure data
   const [pageType, setPageType] = useState('summary'); // Default page type to 'summary'
 
   useEffect(() => {
     const fetchContent = async () => {
       try {
-        if (!chapterId || !sectionId) {
-          console.error('Invalid chapter or section ID');
+        if (!chapterId || !pageType) {
+          console.error('Invalid chapter or page type');
           return;
         }
 
+        let response;
         if (pageType === 'quiz') {
-          // Fetch quiz questions
-          const response = await fetch(
+          // Fetch quiz questions from a dedicated quiz endpoint
+          response = await fetch(
             `http://127.0.0.1:5000/api/quiz?chapter=${encodeURIComponent(chapterId)}&section=${encodeURIComponent(sectionId)}`
           );
-          if (!response.ok) {
-            throw new Error('Network response was not ok');
-          }
-          const data = await response.json();
-          setQuestions(data.questions);
-        } else if (pageType === 'summary') {
-          // Fetch tree structure for summary section
-          const response = await fetch('http://127.0.0.1:5000/api/tree');
-          if (!response.ok) {
-            throw new Error('Network response was not ok');
-          }
-          const data = await response.json();
-          setTreeData(data);
         } else {
-          // Fetch page content
-          const response = await fetch(
-            `http://127.0.0.1:5000/api/page?chapter=${encodeURIComponent(chapterId)}&section=${encodeURIComponent(
-              sectionId
-            )}&type=${encodeURIComponent(pageType)}`
+          // Fetch content for summary or activity
+          response = await fetch(
+            `http://127.0.0.1:5000/api/page?chapter=${encodeURIComponent(chapterId)}&section=${encodeURIComponent(sectionId)}`
           );
-          if (!response.ok) {
-            throw new Error('Network response was not ok');
-          }
-          const data = await response.json();
-          setContent(data.content);
+        }
+
+        if (!response.ok) {
+          throw new Error('Network response was not ok');
+        }
+
+        const data = await response.json();
+
+        if (pageType === 'quiz') {
+          setQuestions(data.questions || []); // Set quiz questions if present
+        } else {
+          setContent(data.content || 'No content available'); // Set the content (summary or activity)
         }
       } catch (error) {
         console.error('Error fetching content:', error);
+        setContent('Error loading content.'); // Display error message
       }
     };
 
     fetchContent();
-  }, [chapterId, sectionId, pageType]);  // Re-run fetch whenever chapter, section, or page type changes
+  }, [chapterId, sectionId, pageType]); // Re-fetch when chapter, section, or pageType changes
 
   // Capitalize page type for display
   const capitalize = (s) => s.charAt(0).toUpperCase() + s.slice(1);
 
   // Render content with LaTeX support
-  const renderContent = (content) => {
-    const parts = content.split(/(\$\$.*?\$\$|\$.*?\$)/g);  // Split by LaTeX delimiters
-    return parts.map((part, index) => {
-      if (part.startsWith('$$') && part.endsWith('$$')) {
-        const math = part.slice(2, -2);
-        return <BlockMath key={index} math={math} />;
-      } else if (part.startsWith('$') && part.endsWith('$')) {
-        const math = part.slice(1, -1);
-        return <InlineMath key={index} math={math} />;
-      } else {
-        return <span key={index}>{part}</span>;
-      }
-    });
-  };
-
-  // Function to find the relevant section in the tree structure
-  const findTreeNode = (chapterId, sectionId, node) => {
-    if (node.name === `Chapter ${chapterId}`) {
-      return node.children.find(child => child.name === `Section ${sectionId}`);
-    }
-    return node.children.map(child => findTreeNode(chapterId, sectionId, child)).find(Boolean);
-  };
-
-  // Render the summary content (tree structure) for the current chapter and section
-  const renderSummary = () => {
-    if (!treeData) return <p>Loading summary...</p>;
-
-    const relevantNode = findTreeNode(parseInt(chapterId), parseInt(sectionId), treeData);
-    return relevantNode ? (
-      <div>
-        <h3>{relevantNode.name}</h3>
-        <p>{relevantNode.content}</p>
-      </div>
-    ) : (
-      <p>No summary found for this section.</p>
-    );
-  };
 
   // Determine previous and next page names for navigation
   const pageOrder = ['summary', 'activity', 'quiz'];
@@ -136,7 +129,7 @@ const MainContent = ({ onNext, onPrev, isFirstPage, isLastPage }) => {
         )
       ) : (
         <div className="content">
-          {pageType === 'summary' ? renderSummary() : renderContent(content)}
+          {content ? renderContent(content) : <p>Loading content...</p>}
         </div>
       )}
 
